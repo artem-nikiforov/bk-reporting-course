@@ -451,6 +451,55 @@ function completeSection(n) {
 }
 
 /* ═══════════════════════════════════════════════
+   ДОБРО-колесо: модальное окно
+═══════════════════════════════════════════════ */
+const DOBRO_DATA = {
+  people: {
+    color: '#FF8732',
+    title: 'Люди',
+    text1: 'Сотрудники перестают бояться жалоб. Знают алгоритм — меньше стресса.',
+    text2: 'Текучесть снижается. Уверенность растёт.'
+  },
+  product: {
+    color: '#E89B1A',
+    title: 'Продукт',
+    text1: 'Каждая жалоба, списанная по ДОБРО, — сигнал для кухни.',
+    text2: 'Меньше ошибок по сборке = меньше списаний.'
+  },
+  sales: {
+    color: '#2B7BB9',
+    title: 'Продажи и Гости',
+    text1: 'Решённый инцидент = Гость возвращается + приводит друзей.',
+    text2: '1 спасённый Гость = несколько дополнительных чеков в месяц.'
+  },
+  clean: {
+    color: '#198737',
+    title: 'Чистота и оборудование',
+    text1: 'Жалоба на грязь через ДОБРО ведёт к анализу причин, а не просто к уборке «для галочки».',
+    text2: 'Ресторан чище. Оборудование вовремя ремонтируют.'
+  }
+};
+
+function openDoproModal(key) {
+  const data = DOBRO_DATA[key];
+  if (!data) return;
+  document.getElementById('dobro-modal-icon').style.background = data.color;
+  document.getElementById('dobro-modal-title').textContent = data.title;
+  document.getElementById('dobro-modal-text1').textContent = data.text1;
+  document.getElementById('dobro-modal-text2').textContent = data.text2;
+  document.getElementById('dobro-modal-overlay').classList.add('open');
+}
+
+function closeDoproModal() {
+  document.getElementById('dobro-modal-overlay').classList.remove('open');
+}
+
+// Закрытие по Esc
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDoproModal();
+});
+
+/* ═══════════════════════════════════════════════
    Init on load
 ═══════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => navigateTo('home'));
