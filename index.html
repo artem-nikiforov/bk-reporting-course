@@ -1,736 +1,1375 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Гостемания — Бургер Кинг</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Работа с отчётностью | Бургер Кинг</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      theme: { extend: { colors: {
-        'bk-brown': '#502314', 'bk-orange': '#FF8732',
-        'bk-green': '#198737', 'bk-yellow': '#FFAA00',
-        'bk-red':   '#D62300', 'bk-cream':  '#F5EBDC',
-      }}}
+      theme: {
+        extend: {
+          colors: {
+            'bk-brown':  '#502314',
+            'bk-orange': '#FF8732',
+            'bk-green':  '#198737',
+            'bk-yellow': '#FFAA00',
+            'bk-red':    '#D62300',
+            'bk-cream':  '#F5EBDC',
+          }
+        }
+      }
     }
   </script>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Flip Card ── */
+    .flip-card {
+      cursor: pointer;
+      perspective: 1200px;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front,
+    .flip-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+    }
+    .flip-card-front {
+      position: relative;
+      display: block;
+    }
+    .flip-card-back {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      transform: rotateY(180deg);
+      overflow: auto;
+    }
+
+    /* ── Tabs ── */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      border: 2px solid #F5EBDC;
+      border-radius: 10px;
+      background: #fff;
+      color: #502314;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { border-color: #FF8732; }
+    .tab-btn.active {
+      background: #FF8732;
+      border-color: #FF8732;
+      color: #fff;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Home hero ── */
+    .home-hero-v2 {
+      background: #502314;
+      padding: 72px 24px 60px;
+      text-align: center;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .home-hero-v2 .badge {
+      display: inline-block;
+      background: rgba(255,170,0,0.2);
+      border: 1.5px solid rgba(255,170,0,0.6);
+      color: #FFAA00;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-bottom: 20px;
+      font-family: 'Roboto', sans-serif;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .home-hero-v2 h1 {
+      font-family: 'Flame', sans-serif;
+      font-weight: 700;
+      font-size: clamp(30px, 7vw, 58px);
+      color: #fff;
+      margin: 0 0 14px;
+      line-height: 1.1;
+    }
+    .home-hero-v2 .lead {
+      font-family: 'Roboto', sans-serif;
+      color: #F5EBDC;
+      font-size: 16px;
+      opacity: 0.8;
+      margin: 0;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    /* ── Choice cards ── */
+    .choice-card {
+      border: 2px solid #F5EBDC;
+      border-radius: 20px;
+      padding: 26px 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      background: #fff;
+    }
+    .choice-card:hover {
+      border-color: #FF8732;
+      box-shadow: 0 8px 28px rgba(255,135,50,0.15);
+      transform: translateY(-2px);
+    }
+    .choice-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 26px;
+    }
+    .choice-card h3 {
+      font-size: 18px;
+      margin: 0 0 6px;
+    }
+    .choice-card p {
+      font-size: 14px;
+      color: #502314;
+      opacity: 0.6;
+      margin: 0 0 10px;
+      line-height: 1.55;
+    }
+    .choice-card .arrow {
+      color: #FF8732;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* ── Section back button ── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #502314;
+      opacity: 0.55;
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      margin-bottom: 20px;
+      padding: 0;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .back-btn:hover { opacity: 1; color: #FF8732; }
+
+    /* ── Section badge ── */
+    .section-badge {
+      display: inline-block;
+      background: #FF8732;
+      color: #fff;
+      font-family: 'Flame', sans-serif;
+      font-size: 13px;
+      padding: 4px 14px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+    }
+
+    /* ── Screenshots ── */
+    .screenshot-img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      display: block;
+      border: 1px solid #F5EBDC;
+    }
+    .screenshot-caption {
+      font-size: 13px;
+      color: #502314;
+      opacity: 0.5;
+      margin-top: 8px;
+      text-align: center;
+    }
+    .screenshots-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Hub 1 grid (2x2) ── */
+    #hub1-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 560px) {
+      #hub1-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Hub next row ── */
+    #hub1-next-row { display: none; }
+    #hub1-next-row.show {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 32px;
+    }
+
+    /* ── Role flip cards grid ── */
+    .role-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .role-cards-grid { grid-template-columns: 1fr; }
+    }
+    .role-flip {
+      min-height: 240px;
+    }
+    .role-flip .flip-card-inner {
+      min-height: 240px;
+    }
+    .role-flip .flip-card-front,
+    .role-flip .flip-card-back {
+      min-height: 240px;
+    }
+
+    /* ── Flip hint ── */
+    .flip-hint {
+      font-family: 'Roboto', sans-serif;
+      font-size: 12px;
+      color: #502314;
+      opacity: 0.4;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── Period badge ── */
+    .period-badge {
+      display: inline-block;
+      background: rgba(255,170,0,0.15);
+      border: 1px solid rgba(255,170,0,0.4);
+      color: #C8851A;
+      font-size: 11px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 3px 10px;
+      margin-top: 10px;
+    }
+
+    /* ── Thin report row images ── */
+    .report-row-img {
+      width: 100%;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #F5EBDC;
+    }
+    .report-section-label {
+      font-family: 'Flame', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #502314;
+      margin-bottom: 8px;
+    }
+    .report-row-wrap {
+      background: #F5EBDC;
+      border-radius: 12px;
+      padding: 16px 16px 12px;
+    }
+
+    /* ── Conclusion card ── */
+    .conclusion-card {
+      background: linear-gradient(135deg, #502314 0%, #3a1a0e 100%);
+      border-radius: 20px;
+      padding: 36px 32px;
+      color: #fff;
+      text-align: center;
+    }
+    .conclusion-card h2 {
+      color: #FF8732;
+      font-size: clamp(22px, 4vw, 32px);
+      margin: 0 0 16px;
+    }
+    .conclusion-card p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #F5EBDC;
+      opacity: 0.9;
+      margin: 0 0 12px;
+    }
+    .conclusion-card p:last-of-type { margin-bottom: 0; }
+
+    /* ── Table responsive ── */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── Callout title ── */
+    .callout-title {
+      font-family: 'Flame', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    /* ── Wide hub card (4th — full row) ── */
+    #hub1-card-4 { grid-column: 1 / -1; }
+
+    /* ── Finish button ── */
+    .btn-finish {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #198737;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 32px;
+      font-family: 'Flame', sans-serif;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-finish:hover { background: #126128; box-shadow: 0 4px 16px rgba(25,135,55,0.3); }
+  </style>
 </head>
 <body>
 
-<!-- ═══════ TOP NAV ═══════ -->
+<!-- ═══════════════════════════════
+     TOP NAVIGATION
+═══════════════════════════════ -->
 <nav id="top-nav">
   <div class="nav-inner">
     <button class="nav-home-btn" onclick="navigateTo('home')">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 6.5L8 2l6 4.5V14a.5.5 0 01-.5.5h-4V10h-3v4.5h-4A.5.5 0 012 14V6.5z" fill="currentColor"/>
       </svg>
-      <span class="hidden sm:inline">Главная</span>
+      Главная
     </button>
     <span id="nav-chapter"></span>
     <span id="nav-progress"></span>
   </div>
-  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+  <div id="progress-bar-wrap">
+    <div id="progress-bar"></div>
+  </div>
 </nav>
 
 
-<!-- ════════════════════════════════
-     HOME PAGE
-════════════════════════════════ -->
-<div id="page-home" class="page">
+<!-- ═══════════════════════════════════════════════
+     ГЛАВНАЯ СТРАНИЦА
+═══════════════════════════════════════════════ -->
+<div id="page-home" class="page" style="padding-top: 60px;">
 
-  <!-- Hero с фоновым изображением -->
-  <div class="home-hero" style="position:relative;padding-top:64px;overflow:hidden;">
-    <img src="pictures/hero_1.png"
-         style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;"
-         alt="">
-    <div id="home-title" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;text-align:center;z-index:1;">
-      <h1>ГОСТЕМАНИЯ</h1>
-      <p>Интерактивный курс для сотрудников Бургер Кинг</p>
-    </div>
+  <div class="home-hero-v2">
+    <span class="badge">Только для АУП и выше</span>
+    <h1>Работа с&nbsp;отчётностью</h1>
+    <p class="lead">В этом модуле два раздела. Выбери тот, который нужен сейчас, или изучай по порядку.</p>
   </div>
 
-  <!-- Вводное видео -->
-  <div class="content-wrap" style="padding-top:40px;padding-bottom:24px;">
-    <!-- videos/block1-intro.mp4 -->
-    <div class="video-wrap fade-in">
-      <video controls class="video-embed" preload="none">
-        <source src="videos/block1-intro.mp4" type="video/mp4">
-      </video>
-    </div>
-  </div>
+  <div class="content-wrap">
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px;">
 
-  <!-- Список глав -->
-  <div class="content-wrap" style="padding-top:16px;">
-    <h2 style="font-size:22px;margin-bottom:8px;">Содержание курса</h2>
-    <p style="font-size:15px;opacity:0.6;margin-bottom:32px;font-family:'Roboto',sans-serif;font-weight:400;">Проходи главы по порядку. Каждая открывается кнопкой «Далее» в конце предыдущей.</p>
-    <div class="chapter-grid">
-      <div class="chapter-card" onclick="navigateTo('block1')">
-        <div class="chapter-num" style="background:#FF8732;">1</div>
-        <div><h3>Философия Гостемании</h3><p>Три кита и четыре навыка</p></div>
+      <div class="choice-card fade-in" onclick="navigateTo('hub1')">
+        <div class="choice-icon" style="background:#FFF0E0;">📊</div>
+        <div style="flex:1;">
+          <h3>Отчёты по комплементам и заменам блюд</h3>
+          <p>Списания в PLS, Аксапте, детализация ДОБРО и комплементы в KingPos — чтобы видеть причины жалоб и корректировать работу команды.</p>
+          <span class="arrow">→</span>
+        </div>
       </div>
-      <div class="chapter-card" onclick="navigateTo('block2')">
-        <div class="chapter-num" style="background:#D62300;">2</div>
-        <div><h3>Алгоритм ДОБРО</h3><p>Твой инструмент в сложных ситуациях</p></div>
+
+      <div class="choice-card fade-in" onclick="navigateTo('block2')">
+        <div class="choice-icon" style="background:#E8F5EB;">⭐</div>
+        <div style="flex:1;">
+          <h3>Индекс Гостемании</h3>
+          <p>Средняя оценка Гостя в мобильном приложении по чистоте, скорости, вежливости, точности, вкусу и температуре — чтобы понимать общий уровень сервиса.</p>
+          <span class="arrow">→</span>
+        </div>
       </div>
-      <div class="chapter-card" onclick="navigateTo('block3')">
-        <div class="chapter-num" style="background:#FFAA00;color:#502314;">3</div>
-        <div><h3>Работа с инцидентами</h3><p>Как читать настроение Гостя</p></div>
-      </div>
-      <div class="chapter-card" onclick="navigateTo('hub')">
-        <div class="chapter-num" style="background:#198737;">4</div>
-        <div><h3>Замена и комплемент</h3><p>Три раздела: замена, комплемент, особые случаи</p></div>
-      </div>
-      <div class="chapter-card full-width" onclick="navigateTo('block8')">
-        <div class="chapter-num" style="background:#502314;">5</div>
-        <div><h3>Заключение</h3><p>Итоги и материалы для скачивания</p></div>
-      </div>
+
     </div>
   </div>
 </div>
 
 
-<!-- ════════════════════════════════
-     БЛОК 1. ФИЛОСОФИЯ ГОСТЕМАНИИ
-════════════════════════════════ -->
-<div id="page-block1" class="page">
-
-  <!-- images/block1-banner.jpg -->
-  <div class="img-slot banner-slot" style="padding-top:64px;">
-    <img src="images/block1-banner.jpg" alt="Баннер: Философия Гостемании"
-         onerror="this.style.display='none'">
-    <div class="img-label">
-      <svg width="28" height="28" fill="none" stroke="#502314" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 9h18M9 21V9"/></svg>
-      images/block1-banner.jpg
-    </div>
-    <!-- Текст поверх картинки -->
-    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-      <h1 style="color:#FF8732;font-size:clamp(28px,5vw,52px);margin:0;text-shadow:0 2px 8px rgba(0,0,0,0.4);">ФИЛОСОФИЯ ГОСТЕМАНИИ</h1>
-    </div>
-  </div>
-
+<!-- ═══════════════════════════════════════════════
+     ХАБ 1: ОТЧЁТЫ ПО КОМПЛЕМЕНТАМ И ЗАМЕНАМ
+═══════════════════════════════════════════════ -->
+<div id="page-hub1" class="page" style="padding-top:60px;">
   <div class="content-wrap">
 
-    <div class="fade-in body-text" style="margin-bottom:32px;">
-      <p style="font-size:clamp(20px,3.5vw,28px);font-weight:500;line-height:1.4;">Гостемания — это твоё внимание к тому, кто рядом.</p>
+    <button class="back-btn fade-in" onclick="navigateTo('home')">
+      ← На главную
+    </button>
+
+    <div class="fade-in">
+      <h2 style="font-size:clamp(26px,5.5vw,42px);margin:0 0 14px;line-height:1.15;">
+        Отчёты по комплементам<br>и заменам блюд
+      </h2>
+      <p class="body-text" style="font-size:16px;margin-bottom:6px;">
+        Списания в PLS, Аксапте, детализация ДОБРО и комплементы в KingPos — чтобы видеть причины жалоб и корректировать работу команды.
+      </p>
+      <p style="font-size:14px;color:#502314;opacity:0.5;font-family:'Roboto',sans-serif;">
+        Разделы открываются по порядку — пройди каждый, чтобы открыть следующий.
+      </p>
     </div>
 
-    <div class="fade-in body-text" style="margin-bottom:48px;">
-      <p>Теперь покажем, из чего она состоит. 3 кита — то, на чём это держится. 4 навыка — то, что ты делаешь.</p>
-    </div>
+    <div class="section-divider fade-in"></div>
 
-    <!-- images/block1-infographic.jpg -->
-    <div class="fade-in img-slot infographic-slot" style="margin-bottom:48px;">
-      <img src="images/block1-infographic.jpg" alt="Инфографика: 3 кита и 4 навыка"
-           onerror="this.style.display='none'">
-      <div class="img-label">
-        <svg width="28" height="28" fill="none" stroke="#502314" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        Инфографика: 3 кита и 4 навыка<br>images/block1-infographic.jpg
+    <div id="hub1-grid" class="fade-in">
+
+      <!-- Карточка 1 -->
+      <div class="hub-card" id="hub1-card-1" onclick="goToSection1(1)">
+        <div class="hub-icon" style="background:#FFF0E0;">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <rect x="3.5" y="3.5" width="19" height="19" rx="3" stroke="#FF8732" stroke-width="1.8"/>
+            <path d="M8 9h10M8 13h10M8 17h6" stroke="#FF8732" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Отчёт в PLS</h3>
+        <p>Оперативно показывает, какие блюда списаны по причине «ДОБРО: замена по жалобе Гостя» за смену.</p>
+        <div class="done-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="lock-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
+        </div>
       </div>
-    </div>
 
-    <div class="fade-in body-text">
-      <p>Философия Гостемании живёт в твоих действиях. А когда случается проблема — в игру вступает алгоритм ДОБРО.</p>
-    </div>
+      <!-- Карточка 2 -->
+      <div class="hub-card locked" id="hub1-card-2" onclick="goToSection1(2)">
+        <div class="hub-icon" style="background:#EEF3FF;">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <path d="M10 5H8a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="#2B7BB9" stroke-width="1.8" stroke-linecap="round"/>
+            <rect x="10" y="3" width="6" height="4" rx="1.5" stroke="#2B7BB9" stroke-width="1.8"/>
+            <path d="M9 12h8M9 15h5" stroke="#2B7BB9" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Акт в Аксапте</h3>
+        <p>Детализация всех списаний за любой прошедший день, в том числе по причине «ДОБРО».</p>
+        <div class="done-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="lock-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
+        </div>
+      </div>
 
-    <div class="next-row">
+      <!-- Карточка 3 -->
+      <div class="hub-card locked" id="hub1-card-3" onclick="goToSection1(3)">
+        <div class="hub-icon" style="background:#FEF0EF;">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <circle cx="12" cy="12" r="7" stroke="#D62300" stroke-width="1.8"/>
+            <path d="M17.5 17.5L22 22" stroke="#D62300" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M10 12h4M12 10v4" stroke="#D62300" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Детализация ДОБРО</h3>
+        <p>Полная выгрузка каждого списания: дата, время, блюдо, себестоимость.</p>
+        <div class="done-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="lock-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
+        </div>
+      </div>
+
+      <!-- Карточка 4 -->
+      <div class="hub-card locked" id="hub1-card-4" onclick="goToSection1(4)">
+        <div class="hub-icon" style="background:#F0FBF3;">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <rect x="3" y="5" width="20" height="16" rx="2.5" stroke="#198737" stroke-width="1.8"/>
+            <path d="M7 11l2.5 2.5L13 10l2.5 2.5L19 11" stroke="#198737" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Отчёты по комплементам</h3>
+        <p>Количество комплементов, причины, кто пробил, время — данные из KingPos и рассылка на почту для ТУ, ОД, ИД.</p>
+        <div class="done-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="lock-badge">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
+        </div>
+      </div>
+
+    </div><!-- /hub1-grid -->
+
+    <div id="hub1-next-row">
       <button class="btn-next" onclick="navigateTo('block2')">
-        Далее
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        Далее — Индекс Гостемании →
       </button>
     </div>
+
   </div>
 </div>
 
 
-<!-- ════════════════════════════════
-     БЛОК 2. АЛГОРИТМ ДОБРО
-════════════════════════════════ -->
-<div id="page-block2" class="page">
-  <div class="page-banner" style="background:linear-gradient(135deg,#D62300 0%,#502314 100%);padding-top:64px;">
-    <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,170,0,0.06) 0,rgba(255,170,0,0.06) 1px,transparent 0,transparent 50%);background-size:24px 24px;"></div>
-    <div class="banner-label">
-      <h1 style="color:#FFAA00;font-size:clamp(32px,6vw,56px);margin:0;position:relative;">АЛГОРИТМ ДОБРО</h1>
+<!-- ═══════════════════════════════════════════════
+     РАЗДЕЛ 1.1: ОТЧЁТ ПО СПИСАНИЮ В PLS
+═══════════════════════════════════════════════ -->
+<div id="page-pls" class="page" style="padding-top:60px;">
+  <div class="content-wrap">
+
+    <button class="back-btn fade-in" onclick="navigateTo('hub1')">
+      ← Назад к разделам
+    </button>
+
+    <div class="fade-in">
+      <span class="section-badge">Раздел 1 из 4</span>
+      <h2 style="font-size:clamp(24px,5vw,38px);margin:0 0 24px;line-height:1.15;">
+        Отчёт по списанию в PLS
+      </h2>
+    </div>
+
+    <div class="fade-in">
+      <div class="callout" style="margin-bottom:14px;">
+        <div class="callout-title">Для чего</div>
+        Оперативно видеть списания по причине «ДОБРО: замена по жалобе Гостя» за сегодня.
+      </div>
+      <div class="callout green" style="margin-bottom:14px;">
+        <div class="callout-title">Как использовать</div>
+        Отслеживать всплески замен, какие блюда чаще списываются, проверять качество и работу кухни в моменте.
+      </div>
+      <div class="callout" style="border-left-color:#FFAA00;background:#FFFBF0;margin-bottom:24px;">
+        <div class="callout-title">Помогает</div>
+        Исправить проблему в тот же день, находить «узкие места».
+      </div>
+    </div>
+
+    <div class="fade-in">
+      <h3 style="font-size:19px;margin:0 0 16px;">Как найти</h3>
+      <ul class="steps-list" style="margin-bottom:28px;">
+        <li>
+          <span class="step-num">1</span>
+          <span>PLS → вкладка <strong>«Списание»</strong></span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Выберите <strong>«Потери на производстве»</strong></span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Нажмите <strong>«Печать отчёта»</strong></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fade-in screenshots-stack">
+      <div>
+        <img src="images/image1.png" alt="PLS — шаг 1: вкладка Списание" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 1 — Откройте PLS, перейдите во вкладку «Списание»</p>
+      </div>
+      <div>
+        <img src="images/image2.png" alt="PLS — шаг 2: Потери на производстве" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 2 — Выберите «Потери на производстве»</p>
+      </div>
+      <div>
+        <img src="images/image3.png" alt="PLS — шаг 3: Печать отчёта" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 3 — Нажмите «Печать отчёта»</p>
+      </div>
+    </div>
+
+    <div class="section-divider fade-in"></div>
+
+    <div class="next-row fade-in">
+      <button class="btn-next" onclick="completeSection1(1)">Раздел пройден →</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     РАЗДЕЛ 1.2: АКТ О СПИСАНИИ В АКСАПТЕ
+═══════════════════════════════════════════════ -->
+<div id="page-axapta" class="page" style="padding-top:60px;">
+  <div class="content-wrap">
+
+    <button class="back-btn fade-in" onclick="navigateTo('hub1')">
+      ← Назад к разделам
+    </button>
+
+    <div class="fade-in">
+      <span class="section-badge">Раздел 2 из 4</span>
+      <h2 style="font-size:clamp(24px,5vw,38px);margin:0 0 24px;line-height:1.15;">
+        Акт о списании товаров в Аксапте
+      </h2>
+    </div>
+
+    <div class="fade-in">
+      <div class="callout" style="margin-bottom:14px;">
+        <div class="callout-title">Для чего</div>
+        Видеть списания по «ДОБРО» и другим причинам за прошедший период (например, вчера).
+      </div>
+      <div class="callout green" style="margin-bottom:14px;">
+        <div class="callout-title">Как использовать</div>
+        Анализировать тенденции по дням, сопоставлять со сменами сотрудников.
+      </div>
+      <div class="callout" style="border-left-color:#FFAA00;background:#FFFBF0;margin-bottom:24px;">
+        <div class="callout-title">Помогает</div>
+        Увидеть повторяющиеся ошибки, требующие системных решений.
+      </div>
+    </div>
+
+    <div class="fade-in">
+      <h3 style="font-size:19px;margin:0 0 16px;">Как найти</h3>
+      <ul class="steps-list" style="margin-bottom:16px;">
+        <li>
+          <span class="step-num">1</span>
+          <span><strong>«Управление рестораном»</strong> → журнал <strong>«Списание порчи продукции»</strong></span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Поставить фильтр <strong>«Показать: Разнесено»</strong></span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Выбрать журнал <strong>«ПотерПроизв»</strong> за нужный день</span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <span>Выбрать <strong>«Строки»</strong> — открыть журнал в отдельном окне Аксапты</span>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <span>Выбрать <strong>«Печать»</strong> → <strong>«Акт о списании товаров»</strong> (2-я страница) — выгрузить в Excel</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fade-in screenshots-stack">
+      <div>
+        <img src="images/image4.png" alt="Аксапта — шаг 1" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 1–2 — Журнал «Списание порчи продукции», фильтр «Разнесено»</p>
+      </div>
+      <div>
+        <img src="images/image5.png" alt="Аксапта — шаг 2" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 3 — Выберите журнал «ПотерПроизв» за нужный день</p>
+      </div>
+      <div>
+        <img src="images/image6.png" alt="Аксапта — шаг 3" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 4 — Откройте «Строки»</p>
+      </div>
+      <div>
+        <img src="images/image7.png" alt="Аксапта — шаг 4: печать" class="screenshot-img" />
+        <p class="screenshot-caption">Шаг 5 — Печать → «Акт о списании товаров» (стр. 2) → выгрузка в Excel</p>
+      </div>
+    </div>
+
+    <div class="section-divider fade-in"></div>
+
+    <div class="next-row fade-in">
+      <button class="btn-next" onclick="completeSection1(2)">Раздел пройден →</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     РАЗДЕЛ 1.3: ДЕТАЛИЗАЦИЯ ДОБРО
+═══════════════════════════════════════════════ -->
+<div id="page-dobro" class="page" style="padding-top:60px;">
+  <div class="content-wrap">
+
+    <button class="back-btn fade-in" onclick="navigateTo('hub1')">
+      ← Назад к разделам
+    </button>
+
+    <div class="fade-in">
+      <span class="section-badge">Раздел 3 из 4</span>
+      <h2 style="font-size:clamp(24px,5vw,38px);margin:0 0 24px;line-height:1.15;">
+        Детализация «Списание блюд по причине ДОБРО»
+      </h2>
+    </div>
+
+    <div class="fade-in">
+      <div class="callout" style="margin-bottom:14px;">
+        <div class="callout-title">Для чего</div>
+        Полная выгрузка каждого списания: дата, время, блюдо, себестоимость.
+        Приходит на почту ресторанов, ТУ, ОД, ИД в отчёте «Индекс Гостемании» каждый понедельник.
+        А также на почту ТУ, ОД, ИД совместно с отчётом по комплементам — раз в 2 недели.
+      </div>
+      <div class="callout green" style="margin-bottom:14px;">
+        <div class="callout-title">Как использовать</div>
+        Разбирать причины списаний, находить корневые проблемы, проводить разборы с командой (можно смотреть видео по времени).
+      </div>
+      <div class="callout" style="border-left-color:#FFAA00;background:#FFFBF0;margin-bottom:14px;">
+        <div class="callout-title">Помогает</div>
+        Перейти от точечного исправления к системным улучшениям.
+      </div>
+      <div class="callout red" style="margin-bottom:24px;">
+        <div class="callout-title">Кто получает</div>
+        Рестораны, ТУ, ОД, ОДД, ИД.
+      </div>
+    </div>
+
+    <div class="fade-in">
+      <div style="background:#F5EBDC;border-radius:14px;padding:18px 20px;margin-bottom:24px;">
+        <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:16px;margin:0 0 8px;color:#502314;">
+          На что обратить внимание
+        </p>
+        <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;color:#502314;">
+          <li>Частое списание одного блюда → проблема на кухне / логистике</li>
+          <li>Резкий рост замен → проверить стандарты</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="fade-in">
+      <img src="images/image8.png" alt="Детализация списаний ДОБРО — скриншот" class="screenshot-img" style="margin-bottom:32px;" />
+    </div>
+
+    <!-- ── Кейс: аккордеон ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 6px;">Кейс: анализируем списания по ДОБРО</h3>
+      <p style="font-size:14px;color:#502314;opacity:0.55;margin:0 0 16px;font-family:'Roboto',sans-serif;">
+        Нажмите на заголовок, чтобы развернуть шаг.
+      </p>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>📅 Шаг 1: Ситуация</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0;">
+              Ресторан списал 4 позиции по «ДОБРО» 2 мая (выходной день).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>🤔 Шаг 2: Гипотеза</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0 0 14px;">
+              На первый взгляд может показаться, что списание случайное (человеческий фактор, ошибочно выбрана категория).
+            </p>
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0 0 14px;">
+              Но если копнуть глубже: в тот день на борту был стажёр, которого поставили без ТН (ТН не было в расписании). Ошибки в сборке не корректировались, часть блюд пришлось переделывать по жалобам Гостей. Аналогичная ситуация повторилась 20 апреля.
+            </p>
+            <img src="images/image9.png" alt="Скриншот детализации — кейс" class="screenshot-img" />
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>🔍 Шаг 3: Действие</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0;">
+              Запрашиваем ОС, смотрим расписание и камеры. Выясняем: стажёр работал без ТН, его действия никто не проверял.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>⚙️ Шаг 4: Решение</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-inner">
+            <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.7;color:#502314;">
+              <li>Внести в расписание обязательное закрепление стажёра за ТН до подтверждения навыков.</li>
+              <li>Провести дополнительное обучение по сборке блюд стажёру.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /аккордеон -->
+
+    <div class="section-divider fade-in"></div>
+
+    <div class="next-row fade-in">
+      <button class="btn-next" onclick="completeSection1(3)">Раздел пройден →</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     РАЗДЕЛ 1.4: ОТЧЁТЫ ПО КОМПЛЕМЕНТАМ
+═══════════════════════════════════════════════ -->
+<div id="page-kingpos" class="page" style="padding-top:60px;">
+  <div class="content-wrap">
+
+    <button class="back-btn fade-in" onclick="navigateTo('hub1')">
+      ← Назад к разделам
+    </button>
+
+    <div class="fade-in">
+      <span class="section-badge">Раздел 4 из 4</span>
+      <h2 style="font-size:clamp(24px,5vw,38px);margin:0 0 24px;line-height:1.15;">
+        Отчёты по комплементам
+      </h2>
+    </div>
+
+    <!-- === 4. KingPos === -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;color:#502314;margin:0 0 14px;display:flex;align-items:center;gap:10px;">
+        <span style="background:#198737;color:#fff;font-family:'Flame',sans-serif;font-size:13px;padding:3px 11px;border-radius:6px;">KingPos</span>
+        Отчёт по комплементам в KingPos
+      </h3>
+      <div class="callout" style="margin-bottom:14px;">
+        <div class="callout-title">Для чего</div>
+        Видеть: сколько комплементов, какие блюда, причины выдачи, кто пробил, время.
+      </div>
+      <div class="callout green" style="margin-bottom:14px;">
+        <div class="callout-title">Как использовать</div>
+        Проверять, как команда использует комплементы (редко / часто, в лимите или превышает), анализировать причины и время жалоб, отслеживать работу кассиров.
+      </div>
+      <div class="callout" style="border-left-color:#FFAA00;background:#FFFBF0;margin-bottom:20px;">
+        <div class="callout-title">Помогает</div>
+        Оценивать применение инструмента, уменьшать жалобы, повышать лояльность.
+      </div>
+      <p style="font-size:15px;color:#502314;margin:0 0 8px;"><strong>Как найти:</strong> KingPos → Отчёты → «Отчёт по комплементам»</p>
+    </div>
+
+    <div class="fade-in" style="margin-bottom:36px;">
+      <img src="images/image10.png" alt="KingPos — отчёт по комплементам" class="screenshot-img" />
+      <p class="screenshot-caption">Отчёт по комплементам в KingPos</p>
+    </div>
+
+    <div class="section-divider fade-in"></div>
+
+    <!-- === 5. Рассылка === -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;color:#502314;margin:0 0 14px;display:flex;align-items:center;gap:10px;">
+        <span style="background:#2B7BB9;color:#fff;font-family:'Flame',sans-serif;font-size:13px;padding:3px 11px;border-radius:6px;">Email</span>
+        Отчёт по комплементам — рассылка для ТУ, ОД, ИД
+      </h3>
+      <div class="callout" style="margin-bottom:14px;">
+        <div class="callout-title">Для чего</div>
+        Показать, как команда работает с комплементами: сколько их выдаётся, по каким причинам, какими блюдами и кем из сотрудников — чтобы понимать уровень внимания к Гостям и качество работы с обратной связью.
+      </div>
+      <div class="callout green" style="margin-bottom:14px;">
+        <div class="callout-title">Как использовать</div>
+        Регулярно смотреть динамику по месяцам, отслеживать, кто из команды активно использует комплементы, а где механика «лежит на полке».
+      </div>
+      <div class="callout" style="border-left-color:#FFAA00;background:#FFFBF0;margin-bottom:14px;">
+        <div class="callout-title">Помогает</div>
+        Выявлять рестораны и смены, которые почти не используют комплементы; находить точки роста в работе с жалобами; благодарить команды, которые стабильно и осознанно применяют комплементы; выявлять аномально большое количество пробитых комплементов.
+      </div>
+      <div class="callout" style="margin-bottom:24px;">
+        <div class="callout-title">Как найти</div>
+        Отчёт приходит на почту ТУ, ОД и ИД с почты <em>Новости Гостевого опыта</em>; а также выкладывается на общий диск: <code style="background:#F5EBDC;padding:2px 6px;border-radius:4px;font-size:13px;">S:\Гостевой_сервис\Комплементы и замены</code>
+      </div>
+    </div>
+
+    <div class="fade-in screenshots-stack">
+      <div>
+        <img src="images/image11.png" alt="Email-рассылка по комплементам — страница 1" class="screenshot-img" />
+        <p class="screenshot-caption">Отчёт-рассылка по комплементам (стр. 1)</p>
+      </div>
+      <div>
+        <img src="images/image12.png" alt="Email-рассылка по комплементам — страница 2" class="screenshot-img" />
+        <p class="screenshot-caption">Отчёт-рассылка по комплементам (стр. 2)</p>
+      </div>
+    </div>
+
+    <div class="section-divider fade-in"></div>
+
+    <div class="next-row fade-in">
+      <button class="btn-next" onclick="completeSection1(4)">Раздел пройден →</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     БЛОК 2: ИНДЕКС ГОСТЕМАНИИ
+═══════════════════════════════════════════════ -->
+<div id="page-block2" class="page" style="padding-top:60px;">
+
+  <!-- Hero banner -->
+  <div style="background:#502314;padding:56px 24px 48px;text-align:center;">
+    <div style="max-width:640px;margin:0 auto;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,170,0,0.2);border:1.5px solid rgba(255,170,0,0.5);border-radius:20px;padding:5px 16px;margin-bottom:20px;">
+        <span style="font-size:16px;">⭐</span>
+        <span style="color:#FFAA00;font-size:12px;font-weight:700;font-family:'Roboto',sans-serif;letter-spacing:0.8px;text-transform:uppercase;">Блок 2 из 2</span>
+      </div>
+      <h2 style="font-family:'Flame',sans-serif;font-weight:700;font-size:clamp(26px,6vw,50px);color:#fff;margin:0 0 14px;line-height:1.1;">Индекс Гостемании</h2>
+      <p style="font-family:'Roboto',sans-serif;color:#F5EBDC;font-size:16px;opacity:0.85;margin:0;line-height:1.6;">
+        Показатель удовлетворённости Гостя последним посещением
+      </p>
     </div>
   </div>
 
   <div class="content-wrap">
-    <div class="fade-in body-text" style="margin-bottom:40px;">
-      <p>Чаще всего ты приходишь на смену в хорошем настроении. Тебя окружают знакомые люди, которые готовы помочь. Всё как обычно. Но иногда случается то, что выбивает из колеи: Гость злится, блюдо не то, кричат без причины.</p>
-      <p>Чтобы в любой сложной ситуации тебе было просто, спокойно и понятно, что делать, — есть инструмент. Он называется «ДОБРО».</p>
-      <p>«ДОБРО» решает три задачи:</p>
-    </div>
 
-    <!-- 3 cards -->
-    <div class="fade-in cards-row" style="margin-bottom:48px;">
-      <div class="feature-card">
-        <div class="card-big-word">ТЫ</div>
-        <p class="card-sub">перестаёшь бояться конфликтов, потому что знаешь что делать</p>
-      </div>
-      <div class="feature-card">
-        <div class="card-big-word">ГОСТЬ</div>
-        <p class="card-sub">не просто покупает Воппер, у него появляется желание вернуться к нам снова</p>
-      </div>
-      <div class="feature-card">
-        <div class="card-big-word">КОМПАНИЯ</div>
-        <p class="card-sub">становится более сильным брендом с каждым решённым инцидентом</p>
-      </div>
-    </div>
-
-    <div class="section-divider fade-in"></div>
-
-    <div class="fade-in body-text" style="margin-bottom:24px;">
-      <p>Каждая ситуация, решённая по ДОБРО, делает ресторан сильнее.</p>
-    </div>
-
-    <div class="fade-in" style="margin-bottom:48px;overflow-x:auto;">
-      <table class="data-table">
-        <thead>
-          <tr><th>Направление</th><th>Что меняется с ДОБРО</th><th>Конкретный результат</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>ЛЮДИ</strong></td>
-            <td>Сотрудники перестают бояться жалоб. Знают алгоритм → меньше стресса</td>
-            <td>Текучесть снижается. Уверенность растёт</td>
-          </tr>
-          <tr>
-            <td><strong>ПРОДУКТЫ</strong></td>
-            <td>Каждая жалоба, списанная по ДОБРО, — сигнал для кухни</td>
-            <td>Меньше ошибок по сборке = меньше списаний</td>
-          </tr>
-          <tr>
-            <td><strong>ПРОДАЖИ</strong></td>
-            <td>Решённый инцидент = Гость возвращается + приводит друзей</td>
-            <td>1 спасённый Гость = + несколько чеков в месяц</td>
-          </tr>
-          <tr>
-            <td><strong>ЧИСТОТА И ОБОРУДОВАНИЕ</strong></td>
-            <td>Жалоба на грязь через ДОБРО ведёт к анализу причин, а не просто к уборке «для галочки»</td>
-            <td>Ресторан чище. Оборудование вовремя ремонтируют</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="fade-in body-text" style="margin-bottom:12px;">
-      <p>Всё это начинается с тебя. С твоих действий в моменте.</p>
-      <p>А теперь — шаги.</p>
-      <p><strong>ДОБРО — это твоя пошаговая инструкция в ситуации, когда Гость недоволен.</strong></p>
-    </div>
-
-    <!-- ДОБРО table — без цветного фона, крупные буквы -->
-    <div class="fade-in" style="margin-bottom:48px;">
-      <table class="dobro-table">
-        <tbody>
-          <tr><td class="dobro-letter-cell">Д</td><td class="dobro-desc">Доверься Гостю</td></tr>
-          <tr><td class="dobro-letter-cell">О</td><td class="dobro-desc">Определи проблему</td></tr>
-          <tr><td class="dobro-letter-cell">Б</td><td class="dobro-desc">Без оправданий извинись</td></tr>
-          <tr><td class="dobro-letter-cell">Р</td><td class="dobro-desc">Реши на месте</td></tr>
-          <tr><td class="dobro-letter-cell">О</td><td class="dobro-desc">Отметь важность обратной связи</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="section-divider fade-in"></div>
-
-    <!-- Gallery — images/block2-gallery-1.jpg … block2-gallery-5.jpg -->
-    <div class="fade-in" style="margin-bottom:48px;">
-      <div class="gallery-wrap">
-        <div class="gallery-track" id="gallery-track">
-          <div class="gallery-slide">
-            <div class="img-slot gallery-slot">
-              <img src="images/block2-gallery-1.jpg" alt="Фото 1" onerror="this.style.display='none'">
-              <div class="img-label">images/block2-gallery-1.jpg</div>
-            </div>
-          </div>
-          <div class="gallery-slide">
-            <div class="img-slot gallery-slot">
-              <img src="images/block2-gallery-2.jpg" alt="Фото 2" onerror="this.style.display='none'">
-              <div class="img-label">images/block2-gallery-2.jpg</div>
-            </div>
-          </div>
-          <div class="gallery-slide">
-            <div class="img-slot gallery-slot">
-              <img src="images/block2-gallery-3.jpg" alt="Фото 3" onerror="this.style.display='none'">
-              <div class="img-label">images/block2-gallery-3.jpg</div>
-            </div>
-          </div>
-          <div class="gallery-slide">
-            <div class="img-slot gallery-slot">
-              <img src="images/block2-gallery-4.jpg" alt="Фото 4" onerror="this.style.display='none'">
-              <div class="img-label">images/block2-gallery-4.jpg</div>
-            </div>
-          </div>
-          <div class="gallery-slide">
-            <div class="img-slot gallery-slot">
-              <img src="images/block2-gallery-5.jpg" alt="Фото 5" onerror="this.style.display='none'">
-              <div class="img-label">images/block2-gallery-5.jpg</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="gallery-controls">
-        <button class="gallery-btn" onclick="galleryMove(-1)">&#8592;</button>
-        <div class="gallery-dots" id="gallery-dots">
-          <div class="gallery-dot active" onclick="galleryIdx=0;renderGallery()"></div>
-          <div class="gallery-dot" onclick="galleryIdx=1;renderGallery()"></div>
-          <div class="gallery-dot" onclick="galleryIdx=2;renderGallery()"></div>
-          <div class="gallery-dot" onclick="galleryIdx=3;renderGallery()"></div>
-          <div class="gallery-dot" onclick="galleryIdx=4;renderGallery()"></div>
-        </div>
-        <button class="gallery-btn" onclick="galleryMove(1)">&#8594;</button>
-      </div>
-    </div>
-
+    <!-- Intro -->
     <div class="fade-in body-text">
-      <p>ДОБРО — твоя опора. А теперь переходим к практике — разберём, как работать с инцидентами.</p>
+      <p>
+        Индекс Гостемании — показатель удовлетворённости Гостя последним посещением. Рассчитывается на основе оценок, которые Гости ставят в мобильном приложении после заказа (от 1 до 5 звёзд).
+      </p>
     </div>
 
-    <div class="next-row">
-      <button class="btn-next" onclick="navigateTo('block3')">
-        Далее
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════
-     БЛОК 3. РАБОТА С ИНЦИДЕНТАМИ
-════════════════════════════════ -->
-<div id="page-block3" class="page">
-  <div class="page-banner" style="background:linear-gradient(135deg,#FFAA00 0%,#FF8732 100%);padding-top:64px;">
-    <div class="banner-label">
-      <h1 style="color:#502314;font-size:clamp(28px,5vw,50px);margin:0;position:relative;">РАБОТА С ИНЦИДЕНТАМИ</h1>
-    </div>
-  </div>
-
-  <div class="content-wrap">
-
-    <!-- ── Тренажёр: расстановка фраз ── -->
-    <div class="fade-in" style="background:#F5EBDC;border-radius:20px;padding:28px 24px;margin-bottom:40px;">
-      <p style="font-size:13px;font-weight:700;color:#FF8732;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px;">Тренажёр</p>
-      <p style="font-size:17px;font-weight:700;margin:0 0 6px;"><strong>Ситуация:</strong> к тебе подходит Гость и говорит: «Я жду заказ уже 10 минут! Вы тут что вообще делаете!»</p>
-      <p style="font-size:15px;margin:0 0 20px;opacity:0.8;">Как ты ответишь Гостю? <strong>Расставь фрагменты фраз в верном порядке</strong> — перетащи карточки.</p>
-
-      <div class="sortable-list" id="sortable-list">
-        <div class="sort-item" data-idx="0" draggable="true">
-          <span class="sort-handle"><svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2 4h12v1.5H2zm0 3.5h12V9H2zm0 3.5h12V12.5H2z"/></svg></span>
-          «Сейчас проверю ваш заказ, он будет готов вне очереди»
-        </div>
-        <div class="sort-item" data-idx="1" draggable="true">
-          <span class="sort-handle"><svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2 4h12v1.5H2zm0 3.5h12V9H2zm0 3.5h12V12.5H2z"/></svg></span>
-          «Вы правы, это долго»
-        </div>
-        <div class="sort-item" data-idx="2" draggable="true">
-          <span class="sort-handle"><svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2 4h12v1.5H2zm0 3.5h12V9H2zm0 3.5h12V12.5H2z"/></svg></span>
-          «Примите, пожалуйста, наш комплемент — мороженое, в качестве извинения»
-        </div>
-        <div class="sort-item" data-idx="3" draggable="true">
-          <span class="sort-handle"><svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2 4h12v1.5H2zm0 3.5h12V9H2zm0 3.5h12V12.5H2z"/></svg></span>
-          «Простите нас, пожалуйста»
-        </div>
-      </div>
-
-      <div style="margin-top:20px;"><button class="btn-check" onclick="checkSortOrder()">Проверить</button></div>
-      <div id="sort-feedback" class="feedback-box"></div>
+    <div class="fade-in" style="margin-bottom:36px;">
+      <img src="images/image13.png" alt="Мобильное приложение — оценка" class="screenshot-img" />
+      <p class="screenshot-caption">Гость ставит оценку в мобильном приложении</p>
     </div>
 
-    <!-- Разбор шагов (открывается после проверки) -->
-    <div id="sort-analysis" class="fade-in hidden" style="margin-bottom:40px;">
-      <h3 style="font-size:20px;margin-bottom:20px;">Что сделал сотрудник на каждом шаге:</h3>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:#FF8732;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div>
-          <div style="font-size:15px;padding-top:5px;"><strong>Диагностировал настроение</strong> — понял, что Гость зол и ему важно признать его правоту</div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:#FF8732;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div>
-          <div style="font-size:15px;padding-top:5px;"><strong>Не нарушил принципы</strong> — не стал спорить, оправдываться или паниковать</div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:#FF8732;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div>
-          <div style="font-size:15px;padding-top:5px;"><strong>Определил алгоритм</strong> — для долгого ожидания &gt;8 минут нужно извиниться, ускорить заказ и дать комплемент</div>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:32px;height:32px;border-radius:50%;background:#FF8732;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">4</div>
-          <div style="font-size:15px;padding-top:5px;"><strong>Принял решение</strong> — предложил комплемент Гостю и ускорил заказ</div>
+    <div class="section-divider fade-in"></div>
+
+    <!-- ── Карточка-перевёртыш: что влияет ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 16px;">Индекс Гостемании: на что можно повлиять, а на что нет</h3>
+      <p style="font-size:14px;color:#502314;opacity:0.5;margin:0 0 16px;font-family:'Roboto',sans-serif;">
+        Нажмите на карточку, чтобы увидеть ответ.
+      </p>
+
+      <div class="flip-card" onclick="flipCard(this)" style="min-height:280px;">
+        <div class="flip-card-inner" style="min-height:280px;">
+
+          <!-- Лицевая сторона -->
+          <div class="flip-card-front" style="background:#502314;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;">
+            <div style="font-size:40px;margin-bottom:16px;">🤔</div>
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:clamp(18px,4vw,26px);color:#fff;text-align:center;margin:0 0 16px;line-height:1.2;">
+              Что влияет на Индекс Гостемании?
+            </p>
+            <div class="flip-hint" style="color:#F5EBDC;opacity:0.5;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M4 9l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Нажмите, чтобы узнать
+            </div>
+          </div>
+
+          <!-- Оборотная сторона -->
+          <div class="flip-card-back" style="background:#fff;border:2px solid #F5EBDC;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                  <span style="width:20px;height:20px;background:#198737;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </span>
+                  <span style="font-family:'Flame',sans-serif;font-weight:700;font-size:15px;color:#198737;">Влияет</span>
+                </div>
+                <ul style="margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.8;color:#502314;">
+                  <li>✅ Чистота в зале</li>
+                  <li>✅ Скорость обслуживания</li>
+                  <li>✅ Вежливость персонала</li>
+                  <li>✅ Точность сборки заказа</li>
+                  <li>✅ Вкус и температура блюд</li>
+                </ul>
+              </div>
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                  <span style="width:20px;height:20px;background:#D62300;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 3l4 4M7 3L3 7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
+                  </span>
+                  <span style="font-family:'Flame',sans-serif;font-weight:700;font-size:15px;color:#D62300;">Не влияет</span>
+                </div>
+                <ul style="margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.8;color:#502314;">
+                  <li>❌ Выбор блюд в меню</li>
+                  <li>❌ Удобство мобильного приложения</li>
+                </ul>
+              </div>
+            </div>
+            <p style="font-size:13px;color:#198737;font-weight:700;margin:16px 0 0;text-align:center;font-family:'Roboto',sans-serif;">
+              Индекс оценивает только то, что ты реально можешь улучшить. Остальное системой отсеивается — чтобы оценка была честной.
+            </p>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <div id="sort-next-btn" style="display:none;margin-bottom:40px;">
-      <button class="btn-secondary" onclick="document.getElementById('video-section').classList.remove('hidden');this.closest('div').style.display='none';">
-        Продолжить
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
+    <div class="section-divider fade-in"></div>
+
+    <!-- ── Как считается ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 16px;">Как считается</h3>
+      <div class="callout" style="margin-bottom:16px;">
+        <div class="callout-title">Формула</div>
+        Среднее арифметическое всех учтённых оценок за период. Формируется не ранее 8-го числа следующего месяца — у Гостя есть 7 дней на то, чтобы поставить оценку.
+      </div>
+      <div class="callout green">
+        <div class="callout-title">Как рассчитываются цели</div>
+        Цели выставляются как среднее за три последних полных месяца.
+      </div>
     </div>
 
-    <!-- ── Тест на определение настроения ── -->
-    <div id="video-section" class="hidden">
-      <div class="section-divider"></div>
+    <div class="section-divider fade-in"></div>
 
-      <div class="fade-in body-text" style="margin-bottom:32px;">
-        <p>А теперь разберём <strong>первый шаг</strong> подробнее — как определять настроение Гостя.</p>
+    <!-- ── Где смотреть ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 16px;">Где смотреть</h3>
+      <p class="body-text" style="font-size:16px;margin:0 0 20px;">
+        Еженедельный дайджест «Индекс Гостемании» приходит на почту ТУ, ОД, ИД. Также находится по ссылке:
+        <code style="background:#F5EBDC;padding:3px 8px;border-radius:4px;font-size:13px;word-break:break-all;">S:\Гостевой_сервис\тест_на_50_ресторанов\Ежедневный_показатель_CSI</code>
+      </p>
+
+      <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:16px;color:#502314;margin:0 0 16px;">Отчёт содержит:</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div class="report-row-wrap fade-in">
+          <p class="report-section-label">Динамика Индекса Гостемании</p>
+          <img src="images/image14.png" alt="Динамика Индекса Гостемании" class="report-row-img" />
+        </div>
+
+        <div class="report-row-wrap fade-in">
+          <p class="report-section-label">Оценки, атрибуты Гостемании, текст отзывов</p>
+          <img src="images/image15.png" alt="Оценки и атрибуты" class="report-row-img" />
+        </div>
+
+        <div class="report-row-wrap fade-in">
+          <p class="report-section-label">Комплементы и замены ДОБРО</p>
+          <img src="images/image16.png" alt="Комплементы и замены ДОБРО" class="report-row-img" />
+        </div>
+
       </div>
+    </div>
 
-      <!-- Вопрос 1 — videos/block3-mood-1.mp4 -->
-      <div class="video-quiz-step active fade-in" style="margin-bottom:32px;">
-        <div class="video-wrap" style="margin-bottom:16px;">
-          <video controls class="video-embed" preload="none">
-            <source src="videos/block3-mood-1.mp4" type="video/mp4">
-          </video>
-        </div>
-        <p style="font-size:16px;font-weight:700;margin-bottom:12px;">Какой это Гость?</p>
-        <div class="answer-choices">
-          <button class="answer-btn" onclick="answerVideo(this,0,'спокойный')">Спокойный</button>
-          <button class="answer-btn" onclick="answerVideo(this,0,'расстроенный')">Расстроенный</button>
-          <button class="answer-btn" onclick="answerVideo(this,0,'злой')">Злой</button>
-        </div>
-        <div id="vq-fb-0" class="vq-feedback"></div>
-      </div>
+    <div class="section-divider fade-in"></div>
 
-      <!-- Вопрос 2 — videos/block3-mood-2.mp4 -->
-      <div class="video-quiz-step fade-in" style="margin-bottom:32px;">
-        <div class="video-wrap" style="margin-bottom:16px;">
-          <video controls class="video-embed" preload="none">
-            <source src="videos/block3-mood-2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <p style="font-size:16px;font-weight:700;margin-bottom:12px;">Какой это Гость?</p>
-        <div class="answer-choices">
-          <button class="answer-btn" onclick="answerVideo(this,1,'раздражённый')">Раздражённый</button>
-          <button class="answer-btn" onclick="answerVideo(this,1,'расстроенный')">Расстроенный</button>
-          <button class="answer-btn" onclick="answerVideo(this,1,'агрессивный')">Агрессивный</button>
-        </div>
-        <div id="vq-fb-1" class="vq-feedback"></div>
-      </div>
+    <!-- ── Кейс: как работать с индексом ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 8px;">Как работать с Индексом Гостемании</h3>
+      <p style="font-size:14px;color:#502314;opacity:0.5;margin:0 0 20px;font-family:'Roboto',sans-serif;">
+        Нажмите на каждый шаг, чтобы увидеть пример из практики.
+      </p>
 
-      <!-- Вопрос 3 — videos/block3-mood-3.mp4 -->
-      <div class="video-quiz-step fade-in" style="margin-bottom:32px;">
-        <div class="video-wrap" style="margin-bottom:16px;">
-          <video controls class="video-embed" preload="none">
-            <source src="videos/block3-mood-3.mp4" type="video/mp4">
-          </video>
-        </div>
-        <p style="font-size:16px;font-weight:700;margin-bottom:12px;">Какой это Гость?</p>
-        <div class="answer-choices">
-          <button class="answer-btn" onclick="answerVideo(this,2,'спокойный')">Спокойный</button>
-          <button class="answer-btn" onclick="answerVideo(this,2,'расстроенный')">Расстроенный</button>
-          <button class="answer-btn" onclick="answerVideo(this,2,'злой')">Злой</button>
-        </div>
-        <div id="vq-fb-2" class="vq-feedback"></div>
-      </div>
-
-      <!-- После прохождения теста -->
-      <div id="video-quiz-done" class="hidden fade-in">
-
-        <p style="font-size:16px;color:#198737;font-weight:700;margin-bottom:24px;">✓ Ты уже видишь разницу. Осталось понять, что важно каждому Гостю.</p>
-
-        <div style="overflow-x:auto;margin-bottom:48px;">
-          <table class="data-table">
-            <thead><tr><th>Состояние</th><th>Что важно Гостю</th><th>Твои слова</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><strong>Спокойный</strong></td>
-                <td>Сочувствие, признание проблемы</td>
-                <td>«Мне жаль, что так вышло. Я понимаю Вас»</td>
-              </tr>
-              <tr>
-                <td><strong>Расстроенный</strong></td>
-                <td>Скорость, уважение к его времени</td>
-                <td>«Сейчас всё исправлю. Быстро»</td>
-              </tr>
-              <tr>
-                <td><strong>Злой / Раздражённый</strong></td>
-                <td>Признать его правоту, дать выговориться</td>
-                <td>«Вы правы. Это недопустимо. Мы исправим»</td>
-              </tr>
-            </tbody>
-          </table>
+      <div id="case-tabs">
+        <div class="tabs-nav">
+          <button class="tab-btn active" onclick="switchTab('case-tabs',0)">1. Получи аналитику</button>
+          <button class="tab-btn" onclick="switchTab('case-tabs',1)">2. Определи приоритеты</button>
+          <button class="tab-btn" onclick="switchTab('case-tabs',2)">3. Зафиксируй план</button>
+          <button class="tab-btn" onclick="switchTab('case-tabs',3)">4. Оцени результаты</button>
         </div>
 
-        <!-- Пузырь сотрудника + ответ -->
-        <div class="fade-in speech-wrap" style="margin-bottom:8px;">
-          <img src="images/block3-employee.jpg" class="speech-avatar" alt="Сотрудник"
-               onerror="this.outerHTML='<div class=\'speech-avatar\'>Фото<br>позже</div>'">
-          <div class="speech-bubble">«Хорошо, настроение я понял. А что мне делать дальше?»</div>
-        </div>
-        <div class="fade-in speech-wrap-reply" style="margin-bottom:40px;">
-          <div class="speech-bubble-reply">Очень правильный вопрос. А дальше нам нужно понять, как работать с конкретным инцидентом.</div>
-        </div>
-
-        <div class="fade-in body-text" style="margin-bottom:24px;">
-          <p>Все инциденты делятся на три уровня:</p>
-        </div>
-
-        <!-- images/block3-incident-levels.jpg -->
-        <div class="fade-in img-slot incident-slot" style="margin-bottom:32px;">
-          <img src="images/block3-incident-levels.jpg" alt="Три уровня инцидентов"
-               onerror="this.style.display='none'">
-          <div class="img-label">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 15l-5-5L5 21"/></svg>
-            images/block3-incident-levels.jpg
+        <!-- Вкладка 1 -->
+        <div class="tab-panel active">
+          <div style="background:#F5EBDC;border-radius:16px;padding:24px 20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span style="background:#FF8732;color:#fff;font-family:'Flame',sans-serif;font-size:13px;padding:4px 12px;border-radius:8px;">Шаг 1</span>
+              <h4 style="font-size:17px;margin:0;">🔍 Получи аналитику (отзывы, сигналы)</h4>
+            </div>
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0 0 16px;">
+              Разбираем отчёт с помощью сводной таблицы. В отчёте видим: явная проблема — точность сборки, а также по 7 отзывов на категории «температура» и «вкус» (оба про качество продукта).
+            </p>
+            <img src="images/image17.png" alt="Анализ отчёта — сводная таблица" class="screenshot-img" />
           </div>
         </div>
 
-        <div class="fade-in" style="margin-bottom:32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:16px;">Скачай памятку, чтобы не потерять.</span>
-          <a class="btn-download" href="#" download>
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
-            Скачать памятку
-          </a>
+        <!-- Вкладка 2 -->
+        <div class="tab-panel">
+          <div style="background:#F5EBDC;border-radius:16px;padding:24px 20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span style="background:#FF8732;color:#fff;font-family:'Flame',sans-serif;font-size:13px;padding:4px 12px;border-radius:8px;">Шаг 2</span>
+              <h4 style="font-size:17px;margin:0;">🎯 Определи приоритеты (топ проблем)</h4>
+            </div>
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0 0 12px;">
+              Выбираем топ самых западающих атрибутов.
+            </p>
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0;">
+              Для ресторана X приоритеты — <strong>точность сборки</strong> и <strong>качество продукта</strong>.
+            </p>
+          </div>
         </div>
 
-        <div class="fade-in body-text" style="margin-bottom:24px;">
-          <p>Когда ты определил уровень инцидента, нужно выбрать инструмент. Их два.</p>
+        <!-- Вкладка 3 -->
+        <div class="tab-panel">
+          <div style="background:#F5EBDC;border-radius:16px;padding:24px 20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span style="background:#FF8732;color:#fff;font-family:'Flame',sans-serif;font-size:13px;padding:4px 12px;border-radius:8px;">Шаг 3</span>
+              <h4 style="font-size:17px;margin:0;">📝 Зафиксируй план действий</h4>
+            </div>
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0 0 12px;">
+              Составляем план действий (Action plan) — что конкретно меняем.
+            </p>
+            <div class="callout green" style="margin:0;">
+              Если тебе нужно вспомнить, как составлять Action plan, изучи первый модуль этого курса:
+              <a href="https://edu.burgerkingrus.ru/_wt/7188515835814474377" target="_blank" style="color:#198737;text-decoration:underline;word-break:break-all;">edu.burgerkingrus.ru</a>
+            </div>
+          </div>
         </div>
 
-        <div class="fade-in" style="overflow-x:auto;margin-bottom:40px;">
-          <table class="data-table">
-            <thead><tr><th></th><th>Комплемент</th><th>Замена</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><strong>Что это</strong></td>
-                <td>Подарок от компании сверх заказа</td>
-                <td>Новое блюдо вместо испорченного</td>
-              </tr>
-              <tr>
-                <td><strong>Когда даём</strong></td>
-                <td>В любой ситуации как жест извинений</td>
-                <td>Когда Гость недоволен качеством блюда или ошибкой в приготовлении</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Вкладка 4 -->
+        <div class="tab-panel">
+          <div style="background:#F5EBDC;border-radius:16px;padding:24px 20px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span style="background:#FF8732;color:#fff;font-family:'Flame',sans-serif;font-size:13px;padding:4px 12px;border-radius:8px;">Шаг 4</span>
+              <h4 style="font-size:17px;margin:0;">🔄 Оцени результаты через период</h4>
+            </div>
+            <p style="font-size:15px;line-height:1.7;color:#502314;margin:0 0 12px;">Через неделю смотрим динамику:</p>
+            <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.8;color:#502314;">
+              <li>сколько стало отзывов по выбранным категориям;</li>
+              <li>выдавались ли Гостям комплементы (это покажет, работала ли команда с инцидентами).</li>
+            </ul>
+          </div>
         </div>
 
-        <div class="fade-in body-text" style="margin-bottom:16px;">
-          <p>А теперь подробнее про каждый инструмент. Разберём в следующем блоке.</p>
-        </div>
-
-        <div class="next-row">
-          <button class="btn-next" onclick="navigateTo('hub')">
-            Далее
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div><!-- /video-section -->
-
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════
-     ХАБ — БЛОК 4
-════════════════════════════════ -->
-<div id="page-hub" class="page">
-  <div class="page-banner" style="background:linear-gradient(135deg,#198737 0%,#502314 100%);padding-top:64px;">
-    <div class="banner-label">
-      <h1 style="color:#F5EBDC;font-size:clamp(28px,5vw,50px);margin:0;position:relative;">ЗАМЕНА И КОМПЛЕМЕНТ</h1>
+      </div><!-- /case-tabs -->
     </div>
-  </div>
 
-  <div class="content-wrap">
+    <div class="section-divider fade-in"></div>
 
-    <!-- ════ РАЗМИНКА (3 шага) ════ -->
-    <div id="hub-warmup-box" class="fade-in" style="background:#F5EBDC;border-radius:20px;padding:28px 24px;margin-bottom:48px;">
-      <p style="font-size:13px;font-weight:700;color:#FF8732;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 6px;">Задание: разминка</p>
-      <p style="font-size:16px;font-weight:700;margin:0 0 20px;">Проверь себя перед изучением материала — три упражнения, одно за другим.</p>
+    <!-- ── Шпаргалка: таблица по атрибутам ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 10px;">Шпаргалка для быстрого анализа по атрибутам</h3>
+      <p class="body-text" style="font-size:15px;margin:0 0 20px;">
+        Если индекс падает по конкретному атрибуту — это сигнал. Сначала проверь типовые причины (они повторяются чаще всего). Если причины не подходят — нужно идти в углублённый анализ.
+      </p>
 
-      <!-- Индикатор шагов -->
-      <div class="warmup-steps-indicator" style="margin-bottom:24px;">
-        <div class="warmup-step-dot active" id="wdot-0">1</div>
-        <div class="warmup-step-line"></div>
-        <div class="warmup-step-dot" id="wdot-1">2</div>
-        <div class="warmup-step-line"></div>
-        <div class="warmup-step-dot" id="wdot-2">3</div>
-      </div>
-
-      <!-- Шаг 1: сортировка жалоб -->
-      <div class="warmup-step active" id="hub-ws0">
-        <p style="font-size:15px;font-weight:700;margin:0 0 8px;">Разнеси жалобы по двум инструментам</p>
-        <p style="font-size:14px;margin:0 0 14px;opacity:0.7;">Перетащи каждую карточку в нужную колонку</p>
-        <div class="zone-pool" id="hub-pool1">
-          <div class="drag-chip" id="h1a" data-key="ожидание">Жду заказ уже 10 минут</div>
-          <div class="drag-chip" id="h1b" data-key="грязь">В зале грязно</div>
-          <div class="drag-chip" id="h1c" data-key="столик">Не убран столик</div>
-          <div class="drag-chip" id="h1d" data-key="нагрубили">Мне нагрубили на кассе</div>
-          <div class="drag-chip" id="h1e" data-key="холодный">Бургер холодный</div>
-          <div class="drag-chip" id="h1f" data-key="сухая">Котлета сухая</div>
-          <div class="drag-chip" id="h1g" data-key="пересолена">Картошка фри пересолена</div>
-          <div class="drag-chip" id="h1h" data-key="кола">Вместо колы течёт просто вода</div>
-        </div>
-        <div class="drop-zones-row" style="margin-top:14px;">
-          <div>
-            <div class="drop-zone-label" style="color:#FFAA00;">Комплемент</div>
-            <div class="drop-zone" id="hub-zone1a"></div>
-          </div>
-          <div>
-            <div class="drop-zone-label" style="color:#D62300;">Замена + Комплемент</div>
-            <div class="drop-zone" id="hub-zone1b"></div>
-          </div>
-        </div>
-        <div style="margin-top:16px;"><button class="btn-check" onclick="checkHubWarmup0()">Проверить</button></div>
-        <div id="hub-ws0-feedback" class="feedback-box"></div>
-      </div>
-
-      <!-- Шаг 2: matching комплементов -->
-      <div class="warmup-step" id="hub-ws1">
-        <p style="font-size:15px;font-weight:700;margin:0 0 16px;">Сопоставь жалобу с правильным комплементом</p>
-        <div class="match-question" id="hub-mq0">
-          <p style="font-weight:700;margin:0 0 8px;">Жалоба: «Грязь в зале»</p>
-          <div class="match-options">
-            <button class="match-btn" onclick="pickHubMatch(this,0,'бургер-сет')">Бургер + закуска + напиток + десерт</button>
-            <button class="match-btn" onclick="pickHubMatch(this,0,'десерт')">Напиток или десерт</button>
-            <button class="match-btn" onclick="pickHubMatch(this,0,'напиток-десерт')">Напиток + десерт или напиток + закуска</button>
-          </div>
-        </div>
-        <div class="match-question" id="hub-mq1">
-          <p style="font-weight:700;margin:0 0 8px;">Жалоба: «Ожидание заказа более 9 минут»</p>
-          <div class="match-options">
-            <button class="match-btn" onclick="pickHubMatch(this,1,'десерт')">Напиток или десерт</button>
-            <button class="match-btn" onclick="pickHubMatch(this,1,'напиток-десерт')">Напиток + десерт или напиток + закуска</button>
-            <button class="match-btn" onclick="pickHubMatch(this,1,'бургер-сет')">Бургер + закуска + напиток + десерт</button>
-          </div>
-        </div>
-        <div class="match-question" id="hub-mq2">
-          <p style="font-weight:700;margin:0 0 8px;">Жалоба: «Нагрубил сотрудник»</p>
-          <div class="match-options">
-            <button class="match-btn" onclick="pickHubMatch(this,2,'напиток-десерт')">Напиток + десерт или напиток + закуска</button>
-            <button class="match-btn" onclick="pickHubMatch(this,2,'десерт')">Напиток или десерт</button>
-            <button class="match-btn" onclick="pickHubMatch(this,2,'бургер-сет')">Бургер + закуска + напиток + десерт</button>
-          </div>
-        </div>
-        <div id="hub-ws1-feedback" class="feedback-box"></div>
-      </div>
-
-      <!-- Шаг 3: делать / не делать -->
-      <div class="warmup-step" id="hub-ws2">
-        <p style="font-size:15px;font-weight:700;margin:0 0 8px;">Распредели действия при злоупотреблении Гостя</p>
-        <p style="font-size:14px;margin:0 0 14px;opacity:0.7;">Перетащи карточки в колонки «Делать» и «Не делать»</p>
-        <div class="zone-pool" id="hub-pool3">
-          <div class="drag-chip" id="h3a" data-key="спокойный-тон">Сохранять спокойный тон</div>
-          <div class="drag-chip" id="h3b" data-key="правила">Ссылаться на правила учёта</div>
-          <div class="drag-chip" id="h3c" data-key="руководитель">Предложить позвать руководителя</div>
-          <div class="drag-chip" id="h3d" data-key="зафиксировать">Зафиксировать инцидент</div>
-          <div class="drag-chip" id="h3e" data-key="обвинять">Обвинять Гостя во лжи</div>
-          <div class="drag-chip" id="h3f" data-key="обманываете">Говорить «Вы нас обманываете»</div>
-          <div class="drag-chip" id="h3g" data-key="спорить">Спорить и доказывать</div>
-          <div class="drag-chip" id="h3h" data-key="игнорировать">Игнорировать</div>
-        </div>
-        <div class="drop-zones-row" style="margin-top:14px;">
-          <div>
-            <div class="drop-zone-label" style="color:#198737;">✓ Что делать</div>
-            <div class="drop-zone" id="hub-zone3a"></div>
-          </div>
-          <div>
-            <div class="drop-zone-label" style="color:#D62300;">✗ Что НЕ делать</div>
-            <div class="drop-zone" id="hub-zone3b"></div>
-          </div>
-        </div>
-        <div style="margin-top:16px;"><button class="btn-check" onclick="checkHubWarmup2()">Проверить</button></div>
-        <div id="hub-ws2-feedback" class="feedback-box"></div>
-      </div>
-
-      <!-- Завершение разминки -->
-      <div class="warmup-done" id="hub-warmup-done">
-        <div style="font-size:32px;margin-bottom:8px;">🎉</div>
-        <p style="font-size:17px;font-weight:700;color:#198737;margin:0;">Разминка завершена!</p>
-        <p style="font-size:15px;opacity:0.75;margin:6px 0 0;">Теперь изучи каждый раздел подробнее — выбери карточку ниже.</p>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Атрибут индекса</th>
+              <th>Блок ДОС+</th>
+              <th>Что проверить в первую очередь</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="4" style="font-weight:700;vertical-align:top;">Чистота в зале</td>
+              <td rowspan="4" style="vertical-align:top;">Чистота и оборудование</td>
+              <td>Достаточно ли сотрудников в зале (расписание, ITPH)?</td>
+            </tr>
+            <tr>
+              <td>Выходят ли ночные уборщики по графику?</td>
+            </tr>
+            <tr>
+              <td>Принимает ли утренний менеджер ночную уборку?</td>
+            </tr>
+            <tr>
+              <td>Есть ли текущие открытые задачи по клинингу в чек-листе?</td>
+            </tr>
+            <tr>
+              <td rowspan="5" style="font-weight:700;vertical-align:top;">Скорость обслуживания</td>
+              <td rowspan="5" style="vertical-align:top;">Продажи / Продукт</td>
+              <td>Соблюдаются ли тайминги приготовления на кухне?</td>
+            </tr>
+            <tr>
+              <td>Достаточно ли сотрудников (расписание, ITPH)?</td>
+            </tr>
+            <tr>
+              <td>Нет ли перегрузки на сборке (анализ ITPH)?</td>
+            </tr>
+            <tr>
+              <td>Всё ли оборудование исправно и включено?</td>
+            </tr>
+            <tr>
+              <td>Есть ли подготовка к пикам? Сотрудники не ходят на перерыв в пики?</td>
+            </tr>
+            <tr>
+              <td rowspan="4" style="font-weight:700;vertical-align:top;">Общение персонала</td>
+              <td rowspan="4" style="vertical-align:top;">Люди</td>
+              <td>Проходили ли сотрудники обучение по ДОБРО?</td>
+            </tr>
+            <tr>
+              <td>Проводятся ли ролевые игры на смене?</td>
+            </tr>
+            <tr>
+              <td>Нет ли текучки, которая влияет на настрой команды?</td>
+            </tr>
+            <tr>
+              <td>Как менеджер смены личным примером задаёт тон?</td>
+            </tr>
+            <tr>
+              <td rowspan="4" style="font-weight:700;vertical-align:top;">Точность сборки заказа</td>
+              <td rowspan="4" style="vertical-align:top;">Продукт</td>
+              <td>Все ли ингредиенты в наличии (нет ли стоп-позиций)?</td>
+            </tr>
+            <tr>
+              <td>Обучены ли сотрудники сборке заказов?</td>
+            </tr>
+            <tr>
+              <td>Обучены ли сотрудники кухни?</td>
+            </tr>
+            <tr>
+              <td>Не ошибся ли сборщик из-за усталости (график)?</td>
+            </tr>
+            <tr>
+              <td rowspan="4" style="font-weight:700;vertical-align:top;">Вкус блюд</td>
+              <td rowspan="4" style="vertical-align:top;">Продукт</td>
+              <td>Свежие ли продукты (проверка сроков годности, ротации)?</td>
+            </tr>
+            <tr>
+              <td>Соблюдается ли технология приготовления?</td>
+            </tr>
+            <tr>
+              <td>Нет ли нарушений в хранении (температурные режимы)?</td>
+            </tr>
+            <tr>
+              <td>Нет ли нарушений при приёме поставок?</td>
+            </tr>
+            <tr>
+              <td rowspan="4" style="font-weight:700;vertical-align:top;">Температура блюда</td>
+              <td rowspan="4" style="vertical-align:top;">Продукт</td>
+              <td>Соблюдается ли время от готовки до выдачи?</td>
+            </tr>
+            <tr>
+              <td>Исправно ли тепловое оборудование? (бин, станция картофеля)</td>
+            </tr>
+            <tr>
+              <td>Не простаивает ли блюдо на выдаче из-за нехватки курьеров / сотрудников?</td>
+            </tr>
+            <tr>
+              <td>Соблюдается ли выдержка продуктов?</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ════ 3 РАЗДЕЛА ════ -->
-    <div class="fade-in hub-grid" style="margin-bottom:48px;">
-      <div class="hub-card" id="hub-card-1" onclick="goToSection(1)">
-        <div class="hub-icon" style="background:#FF8732;">
-          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v4H4zm0 8h8v8H4zm12 0h4v4h-4z"/></svg>
-        </div>
-        <h3>Замена + Комплемент</h3>
-        <p>Когда и как заменять блюдо</p>
-        <div class="done-badge"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-      </div>
-      <div class="hub-card locked" id="hub-card-2" onclick="goToSection(2)">
-        <div class="lock-badge"><svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
-        <div class="hub-icon" style="background:#FFAA00;">
-          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <h3>Комплемент</h3>
-        <p>Как выбрать и оформить</p>
-        <div class="done-badge"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-      </div>
-      <div class="hub-card locked" id="hub-card-3" onclick="goToSection(3)">
-        <div class="lock-badge"><svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
-        <div class="hub-icon" style="background:#D62300;">
-          <svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        </div>
-        <h3>Особые случаи</h3>
-        <p>Злоупотребления и нестандартные ситуации</p>
-        <div class="done-badge"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-      </div>
+    <div class="section-divider fade-in"></div>
+
+    <!-- ── Подытожим: карточки-перевёртыши ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 8px;">Давай подытожим</h3>
+      <p style="font-size:16px;color:#502314;margin:0 0 6px;font-family:'Roboto',sans-serif;">Что же делает каждый сотрудник АУП?</p>
+      <p style="font-size:14px;color:#502314;opacity:0.5;margin:0 0 20px;font-family:'Roboto',sans-serif;">
+        Нажмите на карточку, чтобы увидеть обязанности.
+      </p>
     </div>
 
-    <!-- ════ FAQ ════ -->
-    <div class="fade-in" style="margin-bottom:40px;">
-      <h3 style="font-size:22px;margin-bottom:20px;">FAQ</h3>
+    <div class="role-cards-grid fade-in">
 
-      <!-- Замена -->
-      <p style="font-size:13px;font-weight:700;color:#FF8732;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 4px;">Замена блюда</p>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">А если я ошибусь и спишу не то блюдо?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">В этом случае необходимо сторнировать журнал. Для этого АУП ресторана должен обратиться к своему бухгалтеру ОУТО или в группу рассылки Товары.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Гость жалуется, но блюдо выглядит нормально. Мне списывать?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Если Гостю что-то не нравится — это его правда. Мы не спорим. Списывайте на «ДОБРО».</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Можно ли списать на «ДОБРО», если мы сами заметили ошибку при сборке?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Да, можно. Если вы переделываете блюдо для Гостя, чтобы он не заметил ошибки — это всё равно забота о Госте. Если такие ошибки повторяются, это повод провести дополнительное обучение.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">А если Гость просит замену, но блюдо съедено на 90%?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Если съедено почти всё — скорее всего, Гостю нужен только комплемент, а не замена. Решайте по ситуации или зовите руководителя.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Не успел списать сразу — можно постфактум?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Да. Списать можно как только освободитесь. Главное — сделайте это в течение смены.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">При замене блюда нужно ли всегда давать комплемент?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Да, при замене всегда в качестве извинений мы предлагаем Гостю комплемент.</div></div>
+      <!-- Менеджер -->
+      <div class="flip-card role-flip" onclick="flipCard(this)">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" style="background:#FF8732;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">👤</div>
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:22px;color:#fff;margin:0 0 8px;">Менеджер</p>
+            <div class="flip-hint" style="color:rgba(255,255,255,0.6);justify-content:center;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M4 9l2.5 2.5L9 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Нажмите
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#fff;border:2px solid #FF8732;display:flex;flex-direction:column;justify-content:flex-start;">
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:16px;color:#FF8732;margin:0 0 12px;">Менеджер</p>
+            <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.75;color:#502314;">
+              <li>Знает приоритеты Гостевого опыта</li>
+              <li>Проигрывает ролевые игры с командой</li>
+              <li>Разбирает негативные отзывы и сообщает действия на смену по Гостемании</li>
+              <li>Организует работу на смене</li>
+            </ul>
+            <span class="period-badge">Еженедельно / ежемесячно</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Комплемент -->
-      <p style="font-size:13px;font-weight:700;color:#FFAA00;letter-spacing:0.06em;text-transform:uppercase;margin:24px 0 4px;">Комплемент</p>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">А если я ошибся и пробил не тот комплемент?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Позовите менеджера. Ошибки бывают, но исправлять их должен руководитель, чтобы не сломать учёт.</div></div>
+      <!-- Директор -->
+      <div class="flip-card role-flip" onclick="flipCard(this)">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" style="background:#502314;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">🏢</div>
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:22px;color:#fff;margin:0 0 8px;">Директор</p>
+            <div class="flip-hint" style="color:rgba(245,235,220,0.55);justify-content:center;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M4 9l2.5 2.5L9 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Нажмите
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#fff;border:2px solid #502314;display:flex;flex-direction:column;justify-content:flex-start;">
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:16px;color:#502314;margin:0 0 12px;">Директор</p>
+            <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.75;color:#502314;">
+              <li>Анализирует дашборд и данные</li>
+              <li>Планирует действия и обучает команду</li>
+              <li>Проводит ролевые игры</li>
+              <li>Назначает лидеров Гостеприимства</li>
+            </ul>
+            <span class="period-badge">Еженедельно / ежемесячно</span>
+          </div>
+        </div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Гость просит два комплемента — что делать?<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">«К сожалению, мне потребуется помощь руководителя, давайте я приглашу менеджера, и мы решим, как лучше поступить в вашей ситуации». Не нарушайте правило ради скандала — лучше позвать старшего.</div></div>
+
+      <!-- Территориальный управляющий -->
+      <div class="flip-card role-flip" onclick="flipCard(this)">
+        <div class="flip-card-inner">
+          <div class="flip-card-front" style="background:#198737;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">🗺️</div>
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:19px;color:#fff;margin:0 0 8px;line-height:1.2;">Территориальный управляющий</p>
+            <div class="flip-hint" style="color:rgba(255,255,255,0.55);justify-content:center;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M4 9l2.5 2.5L9 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Нажмите
+            </div>
+          </div>
+          <div class="flip-card-back" style="background:#fff;border:2px solid #198737;display:flex;flex-direction:column;justify-content:flex-start;">
+            <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:16px;color:#198737;margin:0 0 12px;">Территориальный управляющий</p>
+            <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.75;color:#502314;">
+              <li>Согласовывает планы директоров</li>
+              <li>Контролирует выполнение по чек-листу</li>
+              <li>Обеспечивает качество процесса</li>
+            </ul>
+            <span class="period-badge">Ежемесячно</span>
+          </div>
+        </div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">У меня нет своей карты, а менеджер занят. Гость ждёт.<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Попросите любого коллегу, у которого есть карта и доступ к кассе, пробить комплемент за вас. Главное — не оставляйте Гостя без внимания.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Комплемент пробил, а продукт закончился на линии.<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg></button>
-        <div class="faq-body"><div class="faq-body-inner">Предложите Гостю равноценную замену из списка комплементов или позовите менеджера для решения.</div></div>
-      </div>
+
+    </div><!-- /role-cards-grid -->
+
+    <div class="section-divider fade-in"></div>
+
+    <!-- ── Заключение ── -->
+    <div class="fade-in conclusion-card">
+      <h2>Главное — действовать</h2>
+      <p>
+        Смотри на отчёты по заменам, комплементам и Индекс Гостемании как на подсказки. Они прямо говорят, где ресторан в порядке, а где пора что‑то менять.
+      </p>
+      <p>
+        Реагируй на сигналы, обсуждай с командой, планируй действия — и гостевой опыт будет расти.
+      </p>
+      <p style="color:#FFAA00;font-weight:700;font-family:'Flame',sans-serif;font-size:17px;margin-top:8px;">
+        Доверяй своим решениям и помни: каждый инцидент, правильно решённый на месте, укрепляет бренд.
+      </p>
     </div>
 
-    <div id="hub-next-row">
-      <button class="btn-next" onclick="navigateTo('block8')">
-        Далее
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    <div class="next-row fade-in">
+      <button class="btn-finish" onclick="navigateTo('home')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Завершить курс
       </button>
     </div>
 
@@ -738,354 +1377,142 @@
 </div>
 
 
-<!-- ════════════════════════════════
-     РАЗДЕЛ 1. ЗАМЕНА + КОМПЛЕМЕНТ
-════════════════════════════════ -->
-<div id="page-section1" class="page">
-  <div class="page-banner" style="background:linear-gradient(135deg,#FF8732 0%,#FFAA00 100%);padding-top:64px;">
-    <div class="banner-label">
-      <h1 style="color:#fff;font-size:clamp(26px,5vw,46px);margin:0;position:relative;">ЗАМЕНА + КОМПЛЕМЕНТ</h1>
-    </div>
-  </div>
-  <div class="content-wrap">
-    <button class="back-to-hub" onclick="navigateTo('hub')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Назад к выбору раздела
-    </button>
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────
+   Router
+───────────────────────────────────── */
+const PAGES = ['home','hub1','pls','axapta','dobro','kingpos','block2'];
 
-    <div class="fade-in body-text" style="margin-bottom:24px;">
-      <p>Замена — это когда Гость получает новое блюдо вместо того, которое ему не понравилось. Бесплатно. Потому что ошибка была на нашей стороне:</p>
-      <ul>
-        <li>Блюдо холодное или пережаренное</li>
-        <li>Перепутали состав</li>
-        <li>Инородный предмет</li>
-        <li>Блюдо не соответствует заказу</li>
-      </ul>
-    </div>
+const CHAPTER_NAMES = {
+  home:    '',
+  hub1:    'Блок 1. Отчёты по комплементам и заменам',
+  pls:     '1.1 Отчёт по списанию в PLS',
+  axapta:  '1.2 Акт о списании в Аксапте',
+  dobro:   '1.3 Детализация ДОБРО',
+  kingpos: '1.4 Отчёты по комплементам',
+  block2:  'Блок 2. Индекс Гостемании',
+};
 
-    <div class="callout fade-in" style="margin-bottom:32px;">
-      <strong>Важно:</strong> Замена без комплемента не бывает. Если ты меняешь блюдо — всегда добавляй комплемент в качестве извинения.
-    </div>
+const CHAPTER_ORDER = ['hub1', 'block2'];
+const SUB_OF_HUB1   = ['pls', 'axapta', 'dobro', 'kingpos'];
+const hub1Done      = [false, false, false, false];
+let currentPage     = 'home';
 
-    <!-- audio/section1-dialogue.mp3 -->
-    <div class="fade-in" style="margin-bottom:8px;">
-      <p style="font-size:16px;font-weight:700;margin-bottom:10px;">Давай посмотрим на примере — включай аудио.</p>
-      <p class="audio-label">audio/section1-dialogue.mp3</p>
-      <audio controls class="audio-embed" preload="none">
-        <source src="audio/section1-dialogue.mp3" type="audio/mpeg">
-      </audio>
-    </div>
+function navigateTo(pageId) {
+  PAGES.forEach(id => {
+    const el = document.getElementById('page-' + id);
+    if (el) el.classList.remove('active');
+  });
+  const target = document.getElementById('page-' + pageId);
+  if (!target) return;
+  target.classList.add('active');
+  currentPage = pageId;
+  window.scrollTo({ top: 0, behavior: 'instant' });
 
-    <!-- Диалог ДОБРО -->
-    <div class="fade-in" style="border-radius:16px;border:2px solid #F5EBDC;padding:20px;margin:20px 0 32px;display:flex;flex-direction:column;gap:4px;">
-      <div class="dialogue-line">
-        <div class="dialogue-badge guest">Гость</div>
-        <div class="dialogue-text">«Бургер невкусный, я не буду это есть»</div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge">Д</div>
-        <div><div class="dialogue-speaker">Ты (Д — Доверься):</div>
-        <div class="dialogue-text">«Я понимаю Вас»</div></div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge">О</div>
-        <div><div class="dialogue-speaker">Ты (О — Определи):</div>
-        <div class="dialogue-text">«Уточните, пожалуйста, что именно не так: холодное или что-то другое?»</div></div>
-      </div>
-      <div class="dialogue-line">
-        <div class="dialogue-badge guest">Гость</div>
-        <div class="dialogue-text">«Да, бургер холодный»</div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge">Б</div>
-        <div><div class="dialogue-speaker">Ты (Б — Без оправданий):</div>
-        <div class="dialogue-text">«Очень жаль, что так вышло. Приносим искренние извинения»</div></div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge">Р</div>
-        <div><div class="dialogue-speaker">Ты (Р — Реши):</div>
-        <div class="dialogue-text">«Сейчас заменим на новый горячий бургер. И в качестве извинений — примите, пожалуйста, комплемент за наш счёт. Что Вы предпочитаете: десерт или закуску?»</div></div>
-      </div>
-      <div class="dialogue-line">
-        <div class="dialogue-badge guest">Гость</div>
-        <div class="dialogue-text">«Хорошо, давайте мороженое»</div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge">О</div>
-        <div><div class="dialogue-speaker">Ты (О — Отметь):</div>
-        <div class="dialogue-text">«Спасибо за честный отзыв. Нам это важно, мы проверим приготовление»</div></div>
-      </div>
-    </div>
+  // Nav bar
+  const chapterEl  = document.getElementById('nav-chapter');
+  const progressEl = document.getElementById('nav-progress');
+  const barEl      = document.getElementById('progress-bar');
 
-    <!-- Пузырь вопроса + ответ -->
-    <div class="fade-in speech-wrap" style="margin-bottom:8px;">
-      <img src="images/section1-employee.jpg" class="speech-avatar" alt="Сотрудник"
-           onerror="this.outerHTML='<div class=\'speech-avatar\'>Фото<br>позже</div>'">
-      <div class="speech-bubble">«Это сколько же я потеряю, если каждому буду продукт заменять?»</div>
-    </div>
-    <div class="fade-in speech-wrap-reply" style="margin-bottom:32px;">
-      <div class="speech-bubble-reply">Нисколько. Замена блюда и комплемент никак не влияет ни на твою зарплату, ни на ресторан. Это инструмент компании. Потерять Гостя — намного дороже, чем заменить один бургер.</div>
-    </div>
+  chapterEl.textContent = CHAPTER_NAMES[pageId] || '';
 
-    <div class="fade-in body-text" style="margin-bottom:16px;">
-      <p>И делать это может каждый обученный сотрудник прилавка, не только АУП.</p>
-      <p>Чтобы провести замену, нужно:</p>
-    </div>
+  const idx = CHAPTER_ORDER.indexOf(pageId);
+  if (idx !== -1) {
+    progressEl.textContent = (idx + 1) + ' / ' + CHAPTER_ORDER.length;
+    barEl.style.width = Math.round(((idx + 1) / CHAPTER_ORDER.length) * 100) + '%';
+  } else if (SUB_OF_HUB1.includes(pageId)) {
+    progressEl.textContent = '1 / ' + CHAPTER_ORDER.length;
+    barEl.style.width = Math.round((1 / CHAPTER_ORDER.length) * 100) + '%';
+  } else {
+    progressEl.textContent = '';
+    barEl.style.width = '0%';
+  }
 
-    <ul class="steps-list fade-in" style="margin-bottom:32px;">
-      <li><div class="step-num">1</div> Зайти в PLS</li>
-      <li><div class="step-num">2</div> Выбрать журнал «Потери на производстве»</li>
-      <li><div class="step-num">3</div> Указать нужное блюдо и причину: «ДОБРО: замена продукции по жалобе Гостя»</li>
-    </ul>
+  // Init first tab of case-tabs when entering block2
+  if (pageId === 'block2') {
+    const g = document.getElementById('case-tabs');
+    if (g) {
+      g.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+      g.querySelectorAll('.tab-panel').forEach((p, i) => p.classList.toggle('active', i === 0));
+    }
+  }
 
-    <div class="callout fade-in" style="margin-bottom:40px;">
-      <strong>Важно:</strong> Если одно и то же блюдо приходится заменять часто — это сигнал для всей команды. Нужно обсудить на ближайшей пятиминутке.
-    </div>
+  setTimeout(initFadeIn, 50);
+}
 
-    <div class="next-row">
-      <button class="btn-next" onclick="completeSection(1)">
-        Готово — вернуться к выбору раздела
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
+/* ─────────────────────────────────────
+   Hub1 section management
+───────────────────────────────────── */
+function goToSection1(n) {
+  navigateTo(SUB_OF_HUB1[n - 1]);
+}
 
+function completeSection1(n) {
+  hub1Done[n - 1] = true;
+  const cards = document.querySelectorAll('#hub1-grid .hub-card');
+  if (cards[n - 1]) cards[n - 1].classList.add('done');
+  if (n < 4 && cards[n]) cards[n].classList.remove('locked');
+  navigateTo('hub1');
+  setTimeout(() => {
+    if (hub1Done.every(Boolean)) {
+      const row = document.getElementById('hub1-next-row');
+      if (row) row.classList.add('show');
+    }
+  }, 120);
+}
 
-<!-- ════════════════════════════════
-     РАЗДЕЛ 2. КОМПЛЕМЕНТ
-════════════════════════════════ -->
-<div id="page-section2" class="page">
-  <div class="page-banner" style="background:linear-gradient(135deg,#FFAA00 0%,#FF8732 100%);padding-top:64px;">
-    <div class="banner-label">
-      <h1 style="color:#502314;font-size:clamp(26px,5vw,48px);margin:0;position:relative;">КОМПЛЕМЕНТ</h1>
-    </div>
-  </div>
-  <div class="content-wrap">
-    <button class="back-to-hub" onclick="navigateTo('hub')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Назад к выбору раздела
-    </button>
+/* ─────────────────────────────────────
+   Fade-in on scroll
+───────────────────────────────────── */
+function initFadeIn() {
+  const els = document.querySelectorAll('.page.active .fade-in:not(.visible)');
+  const io  = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight) el.classList.add('visible');
+    else io.observe(el);
+  });
+}
 
-    <div class="fade-in body-text" style="margin-bottom:24px;">
-      <p>Комплемент — это подарок от компании. Гость получает его бесплатно, сверх заказа. Его можно выдавать отдельно от замены.</p>
-      <p>Комплемент уместен почти в любой ситуации, когда Гость недоволен:</p>
-      <ul>
-        <li>Долгое ожидание</li>
-        <li>Грязь в зале или туалете</li>
-        <li>Проблема с оплатой</li>
-        <li>Ошибка в сборке (дополнительно к замене)</li>
-        <li>Просто как жест извинений</li>
-      </ul>
-    </div>
+/* ─────────────────────────────────────
+   Flip card
+───────────────────────────────────── */
+function flipCard(el) {
+  el.classList.toggle('flipped');
+}
 
-    <div class="fade-in" style="overflow-x:auto;margin-bottom:40px;">
-      <h3 style="font-size:18px;margin-bottom:12px;">Какие бывают комплементы?</h3>
-      <table class="data-table">
-        <thead><tr><th>Тип</th><th>Когда давать</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Сладкий десерт</strong></td><td>Гость сыт, дети, жаркая погода, финал визита</td></tr>
-          <tr><td><strong>Закуска / гарнир</strong></td><td>Гость голоден, компания подростков</td></tr>
-          <tr><td><strong>Напиток</strong></td><td>Любая ситуация как базовый жест</td></tr>
-          <tr><td><strong>Бургер</strong></td><td>Серьёзная проблема, разгневанный гость</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:14px;margin-top:10px;opacity:0.7;">Эта матрица — рекомендация, а не жёсткое правило.</p>
-    </div>
+/* ─────────────────────────────────────
+   Tabs
+───────────────────────────────────── */
+function switchTab(groupId, idx) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx));
+  group.querySelectorAll('.tab-panel').forEach((panel, i) => panel.classList.toggle('active', i === idx));
+}
 
-    <!-- videos/section2-dialogue.mp4 -->
-    <div class="fade-in" style="margin-bottom:8px;">
-      <p class="audio-label">videos/section2-dialogue.mp4</p>
-      <div class="video-wrap" style="margin-bottom:20px;">
-        <video controls class="video-embed" preload="none">
-          <source src="videos/section2-dialogue.mp4" type="video/mp4">
-        </video>
-      </div>
-    </div>
+/* ─────────────────────────────────────
+   FAQ Accordion
+───────────────────────────────────── */
+function toggleFaq(btn) {
+  const body  = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
 
-    <div class="fade-in" style="border-radius:16px;border:2px solid #F5EBDC;padding:20px;margin-bottom:24px;display:flex;flex-direction:column;gap:4px;">
-      <div class="dialogue-line">
-        <div class="dialogue-badge guest">Гость</div>
-        <div class="dialogue-text">«Я уже 10 минут жду заказ. Это никуда не годится»</div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge" style="font-size:11px;font-family:'Roboto',sans-serif;font-weight:700;">Ты</div>
-        <div class="dialogue-text">«Я понимаю Вас. Вы правы. Простите нас, пожалуйста. Ваш заказ уже готовится вне очереди. И примите, пожалуйста, наш комплемент — мороженое, в качестве извинения»</div>
-      </div>
-      <div class="dialogue-line">
-        <div class="dialogue-badge guest">Гость</div>
-        <div class="dialogue-text">«Спасибо»</div>
-      </div>
-      <div class="dialogue-line highlight">
-        <div class="dialogue-badge" style="font-size:11px;font-family:'Roboto',sans-serif;font-weight:700;">Ты</div>
-        <div class="dialogue-text">«Спасибо, что сказали. Нам это важно»</div>
-      </div>
-    </div>
+/* ─────────────────────────────────────
+   Init
+───────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => navigateTo('home'));
+</script>
 
-    <!-- videos/section2-pls.mp4 -->
-    <div class="fade-in" style="margin-bottom:8px;">
-      <p style="font-size:15px;font-weight:700;margin-bottom:8px;">Как технически пробить комплемент:</p>
-      <p class="audio-label">videos/section2-pls.mp4</p>
-      <div class="video-wrap" style="margin-bottom:24px;">
-        <video controls class="video-embed" preload="none">
-          <source src="videos/section2-pls.mp4" type="video/mp4">
-        </video>
-      </div>
-    </div>
-
-    <div class="callout fade-in" style="margin-bottom:16px;">
-      <strong>Важно:</strong> Если появилось предупреждение «Превышение лимита» — нажми «Продолжить» и сообщи менеджеру.
-    </div>
-
-    <div class="callout green fade-in" style="margin-bottom:40px;">
-      <strong>Главное:</strong> комплемент — это подарок. Бесплатный. Без лишних списаний. Под своей картой. И без штрафов.
-    </div>
-
-    <div class="next-row">
-      <button class="btn-next" onclick="completeSection(2)">
-        Готово — вернуться к выбору раздела
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════
-     РАЗДЕЛ 3. ОСОБЫЕ СЛУЧАИ
-════════════════════════════════ -->
-<div id="page-section3" class="page">
-  <div class="page-banner" style="background:linear-gradient(135deg,#D62300 0%,#502314 100%);padding-top:64px;">
-    <div class="banner-label">
-      <h1 style="color:#F5EBDC;font-size:clamp(26px,5vw,48px);margin:0;position:relative;">ОСОБЫЕ СЛУЧАИ</h1>
-    </div>
-  </div>
-  <div class="content-wrap">
-    <button class="back-to-hub" onclick="navigateTo('hub')">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-      Назад к выбору раздела
-    </button>
-
-    <div class="fade-in body-text" style="margin-bottom:32px;">
-      <p>Мы выросли на принципе «Гость всегда прав». Но в жизни бывают ситуации, когда Гость пытается этим принципом злоупотребить.</p>
-    </div>
-
-    <div class="callout red fade-in" style="margin-bottom:16px;">
-      <strong>Важно понять:</strong> Это редкость. 99% Гостей честны. Но мы должны быть готовы к этому 1%, чтобы защитить себя и компанию максимально вежливо и достойно.
-    </div>
-
-    <div class="callout fade-in" style="margin-bottom:32px;">
-      <strong>Наша задача:</strong> Не дать комплемент там, где его быть не должно, но при этом не унизить Гостя и не спровоцировать скандал.
-    </div>
-
-    <div class="fade-in body-text" style="margin-bottom:24px;">
-      <p><strong>Как распознать злоупотребление?</strong></p>
-      <ul>
-        <li>Регулярные жалобы от одного Гостя</li>
-        <li>Сам просит комплемент, не даёт предложить решение</li>
-        <li>История меняется или звучит странно</li>
-        <li>Давит на жалость</li>
-      </ul>
-      <p>Даже если Гость злоупотребляет, ДОБРО работает — просто без комплемента.</p>
-    </div>
-
-    <!-- Скрипт 1 — audio/section3-script-1.mp3 -->
-    <div class="fade-in" style="margin-bottom:24px;">
-      <p style="font-size:15px;margin-bottom:8px;"><strong>Гость:</strong> «Я к вам постоянно хожу, а вы даже не цените. Дайте комплемент».</p>
-      <p class="audio-label">audio/section3-script-1.mp3</p>
-      <audio controls class="audio-embed" preload="none" style="margin-bottom:12px;">
-        <source src="audio/section3-script-1.mp3" type="audio/mpeg">
-      </audio>
-      <div class="callout">«Мы ценим вашу обратную связь и благодарим, что поделились своим мнением. У нас строгий учёт комплементов, и они предоставляются по внутренним правилам. Приношу извинения».</div>
-    </div>
-
-    <!-- Скрипт 2 — audio/section3-script-2.mp3 -->
-    <div class="fade-in" style="margin-bottom:40px;">
-      <p style="font-size:15px;margin-bottom:8px;"><strong>Гость:</strong> «Дайте мне ещё мороженое. Я же только что жаловался на ожидание».</p>
-      <p class="audio-label">audio/section3-script-2.mp3</p>
-      <audio controls class="audio-embed" preload="none" style="margin-bottom:12px;">
-        <source src="audio/section3-script-2.mp3" type="audio/mpeg">
-      </audio>
-      <div class="callout">«Давайте я сейчас приглашу руководителя, и мы вместе разберём вашу ситуацию в рамках наших правил».</div>
-    </div>
-
-    <div class="next-row">
-      <button class="btn-next" onclick="completeSection(3)">
-        Готово — вернуться к выбору раздела
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════
-     БЛОК 5. ЗАКЛЮЧЕНИЕ
-════════════════════════════════ -->
-<div id="page-block8" class="page">
-
-  <!-- images/block8-banner.jpg -->
-  <div class="img-slot" style="height:280px;padding-top:64px;">
-    <img src="images/block8-banner.jpg" alt="Баннер заключения" onerror="this.style.display='none'">
-    <div class="img-label">images/block8-banner.jpg</div>
-    <!-- Текст поверх -->
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(80,35,20,0.55);">
-      <h1 style="color:#fff;font-size:clamp(32px,6vw,58px);margin:0;">ПОЗДРАВЛЯЮ!</h1>
-      <p style="color:#F5EBDC;font-family:'Roboto',sans-serif;font-size:18px;margin:8px 0 0;">Ты прошёл весь путь.</p>
-    </div>
-  </div>
-
-  <div class="content-wrap">
-    <div class="fade-in body-text" style="margin-bottom:40px;">
-      <p>Гостемания — это твоё внимание к тем, кто рядом. Ты научился читать настроение, делать замену, выбирать комплемент и не теряться в сложных ситуациях.</p>
-      <p>Теперь ты готов работать спокойно, уверенно и с душой.</p>
-    </div>
-
-    <div class="fade-in" style="background:#F5EBDC;border-radius:20px;padding:28px 32px;margin-bottom:40px;">
-      <h2 style="font-size:24px;margin:0 0 20px;color:#FF8732;">Помни:</h2>
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:8px;height:8px;border-radius:50%;background:#FF8732;flex-shrink:0;margin-top:7px;"></div>
-          <p style="margin:0;font-size:16px;">Твоя улыбка и спокойствие решают половину проблемы.</p>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:8px;height:8px;border-radius:50%;background:#FF8732;flex-shrink:0;margin-top:7px;"></div>
-          <p style="margin:0;font-size:16px;">Комплемент и замена — не расходы, а инвестиции в лояльность.</p>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:8px;height:8px;border-radius:50%;background:#FF8732;flex-shrink:0;margin-top:7px;"></div>
-          <p style="margin:0;font-size:16px;">Ты — лицо компании.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="fade-in body-text" style="margin-bottom:48px;text-align:center;">
-      <p style="font-size:20px;font-weight:700;">Гостемания живёт в тебе. Береги Гостя, береги себя и действуй по ДОБРО.</p>
-    </div>
-
-    <div class="fade-in" style="margin-bottom:32px;">
-      <h3 style="font-size:18px;margin-bottom:16px;">Материалы для скачивания:</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;">
-        <a class="btn-download" href="#" download>
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
-          Памятка по ДОБРО
-        </a>
-        <a class="btn-download" href="#" download>
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
-          Таблица уровней инцидентов
-        </a>
-      </div>
-    </div>
-
-    <div class="fade-in" style="text-align:center;padding:40px 0;">
-      <button class="btn-next" onclick="navigateTo('home')" style="background:#502314;">
-        На главную
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-      </button>
-    </div>
-  </div>
-</div>
-
-<script src="js/app.js"></script>
 </body>
 </html>
