@@ -26,13 +26,16 @@
   </script>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    /* ── Flip Card ── */
+    /* ── Flip Card ──
+       Грид-стек: обе стороны лежат в одной грид-ячейке, поэтому высота
+       обёртки = высоте самой длинной стороны. Никаких фиксированных высот
+       и внутреннего скролла — карточка всегда показывает контент целиком. */
     .flip-card {
       cursor: pointer;
       perspective: 1200px;
     }
     .flip-card-inner {
-      position: relative;
+      display: grid;
       width: 100%;
       transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
       transform-style: preserve-3d;
@@ -43,22 +46,28 @@
     }
     .flip-card-front,
     .flip-card-back {
+      grid-area: 1 / 1 / 2 / 2; /* обе стороны в одной ячейке */
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       border-radius: 20px;
       padding: 28px 24px;
       width: 100%;
     }
-    .flip-card-front {
-      position: relative;
-      display: block;
-    }
     .flip-card-back {
-      position: absolute;
-      top: 0; left: 0;
-      height: 100%;
       transform: rotateY(180deg);
-      overflow: auto;
+    }
+
+    /* Карточка «что влияет на индекс» — лицевая сторона держит
+       минимальную высоту, оборотная растёт по контенту */
+    .influence-flip .flip-card-front { min-height: 240px; }
+    .influence-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    /* На мобиле колонки в один столбец, чтобы текст не сжимался */
+    @media (max-width: 480px) {
+      .influence-cols { grid-template-columns: 1fr; gap: 14px; }
     }
 
     /* ── Tabs ── */
@@ -214,6 +223,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.12);
       display: block;
       border: 1px solid #F5EBDC;
+      cursor: zoom-in;
     }
     .screenshot-caption {
       font-size: 13px;
@@ -222,11 +232,102 @@
       margin-top: 8px;
       text-align: center;
     }
+    .screenshot-caption .tap-hint {
+      display: none;
+    }
     .screenshots-stack {
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
+
+    /* Подсказка «нажмите для увеличения» — только на сенсорных/узких экранах,
+       где скрин виден плохо */
+    @media (max-width: 700px) {
+      .screenshot-caption .tap-hint {
+        display: inline;
+        color: #FF8732;
+        font-weight: 500;
+      }
+    }
+
+    /* Пара одинаковых скринов-отчётов в сетку (email-рассылка) */
+    .report-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .report-pair { grid-template-columns: 1fr; }
+    }
+    .report-pair-card {
+      background: #F5EBDC;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    .report-pair-frame {
+      height: 220px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #e6d8c4;
+    }
+    .report-pair-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      cursor: zoom-in;
+    }
+
+    /* ── Lightbox для скринов ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(40,18,10,0.88);
+      padding: 24px;
+      cursor: zoom-out;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .lightbox.open {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .lightbox img {
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+      margin: auto;
+    }
+    .lightbox-close {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
     /* ── Hub 1 grid (2x2) ── */
     #hub1-grid {
@@ -238,9 +339,8 @@
       #hub1-grid { grid-template-columns: 1fr; }
     }
 
-    /* ── Hub next row ── */
-    #hub1-next-row { display: none; }
-    #hub1-next-row.show {
+    /* ── Hub next row ── (всегда видна — разделы открыты сразу) */
+    #hub1-next-row {
       display: flex;
       justify-content: flex-end;
       margin-top: 32px;
@@ -447,7 +547,7 @@
         Списания в PLS, Аксапте, детализация ДОБРО и комплементы в KingPos — чтобы видеть причины жалоб и корректировать работу команды.
       </p>
       <p style="font-size:14px;color:#502314;opacity:0.5;font-family:'Roboto',sans-serif;">
-        Разделы открываются по порядку — пройди каждый, чтобы открыть следующий.
+        Выбери любой отчёт — все разделы доступны сразу.
       </p>
     </div>
 
@@ -468,13 +568,10 @@
         <div class="done-badge">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="lock-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
-        </div>
       </div>
 
       <!-- Карточка 2 -->
-      <div class="hub-card locked" id="hub1-card-2" onclick="goToSection1(2)">
+      <div class="hub-card" id="hub1-card-2" onclick="goToSection1(2)">
         <div class="hub-icon" style="background:#EEF3FF;">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
             <path d="M10 5H8a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="#2B7BB9" stroke-width="1.8" stroke-linecap="round"/>
@@ -487,13 +584,10 @@
         <div class="done-badge">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="lock-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
-        </div>
       </div>
 
       <!-- Карточка 3 -->
-      <div class="hub-card locked" id="hub1-card-3" onclick="goToSection1(3)">
+      <div class="hub-card" id="hub1-card-3" onclick="goToSection1(3)">
         <div class="hub-icon" style="background:#FEF0EF;">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
             <circle cx="12" cy="12" r="7" stroke="#D62300" stroke-width="1.8"/>
@@ -506,13 +600,10 @@
         <div class="done-badge">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="lock-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
-        </div>
       </div>
 
       <!-- Карточка 4 -->
-      <div class="hub-card locked" id="hub1-card-4" onclick="goToSection1(4)">
+      <div class="hub-card" id="hub1-card-4" onclick="goToSection1(4)">
         <div class="hub-icon" style="background:#F0FBF3;">
           <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
             <rect x="3" y="5" width="20" height="16" rx="2.5" stroke="#198737" stroke-width="1.8"/>
@@ -523,9 +614,6 @@
         <p>Количество комплементов, причины, кто пробил, время — данные из KingPos и рассылка на почту для ТУ, ОД, ИД.</p>
         <div class="done-badge">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="lock-badge">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="5.5" width="8" height="5.5" rx="1" stroke="#fff" stroke-width="1.2"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke="#fff" stroke-width="1.2"/></svg>
         </div>
       </div>
 
@@ -880,6 +968,10 @@
       <p class="screenshot-caption">Отчёт по комплементам в KingPos</p>
     </div>
 
+    <div class="fade-in" style="margin-bottom:36px;">
+      <div style="position: relative; padding-top: 56.25%;"><iframe title="Видеоинструкция-Отчет по комплементам" width="100%" height="100%" src="https://bktube.burgerkingrus.ru/videos/embed/ojUhvSLpjWkzAtjvy6EvdP?title=0&amp;warningTitle=0&amp;peertubeLink=0&amp;p2p=0" frameborder="0" allowfullscreen="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" style="position: absolute; inset: 0px;"></iframe></div>
+    </div>
+
     <div class="section-divider fade-in"></div>
 
     <!-- === 5. Рассылка === -->
@@ -906,14 +998,18 @@
       </div>
     </div>
 
-    <div class="fade-in screenshots-stack">
-      <div>
-        <img src="images/image11.png" alt="Email-рассылка по комплементам — страница 1" class="screenshot-img" />
-        <p class="screenshot-caption">Отчёт-рассылка по комплементам (стр. 1)</p>
+    <div class="fade-in report-pair">
+      <div class="report-pair-card">
+        <div class="report-pair-frame">
+          <img src="images/image11.png" alt="Email-рассылка по комплементам — страница 1" />
+        </div>
+        <p class="screenshot-caption">Отчёт-рассылка по комплементам (стр. 1)<br><span class="tap-hint">нажмите, чтобы увеличить</span></p>
       </div>
-      <div>
-        <img src="images/image12.png" alt="Email-рассылка по комплементам — страница 2" class="screenshot-img" />
-        <p class="screenshot-caption">Отчёт-рассылка по комплементам (стр. 2)</p>
+      <div class="report-pair-card">
+        <div class="report-pair-frame">
+          <img src="images/image12.png" alt="Email-рассылка по комплементам — страница 2" />
+        </div>
+        <p class="screenshot-caption">Отчёт-рассылка по комплементам (стр. 2)<br><span class="tap-hint">нажмите, чтобы увеличить</span></p>
       </div>
     </div>
 
@@ -969,11 +1065,11 @@
         Нажмите на карточку, чтобы увидеть ответ.
       </p>
 
-      <div class="flip-card" onclick="flipCard(this)" style="min-height:280px;">
-        <div class="flip-card-inner" style="min-height:280px;">
+      <div class="flip-card influence-flip" onclick="flipCard(this)">
+        <div class="flip-card-inner">
 
           <!-- Лицевая сторона -->
-          <div class="flip-card-front" style="background:#502314;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;">
+          <div class="flip-card-front" style="background:#502314;display:flex;flex-direction:column;align-items:center;justify-content:center;">
             <div style="font-size:40px;margin-bottom:16px;">🤔</div>
             <p style="font-family:'Flame',sans-serif;font-weight:700;font-size:clamp(18px,4vw,26px);color:#fff;text-align:center;margin:0 0 16px;line-height:1.2;">
               Что влияет на Индекс Гостемании?
@@ -986,15 +1082,15 @@
 
           <!-- Оборотная сторона -->
           <div class="flip-card-back" style="background:#fff;border:2px solid #F5EBDC;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;">
+            <div class="influence-cols">
               <div>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                   <span style="width:20px;height:20px;background:#198737;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </span>
                   <span style="font-family:'Flame',sans-serif;font-weight:700;font-size:15px;color:#198737;">Влияет</span>
                 </div>
-                <ul style="margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.8;color:#502314;">
+                <ul style="margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.7;color:#502314;">
                   <li>✅ Чистота в зале</li>
                   <li>✅ Скорость обслуживания</li>
                   <li>✅ Вежливость персонала</li>
@@ -1003,19 +1099,19 @@
                 </ul>
               </div>
               <div>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                   <span style="width:20px;height:20px;background:#D62300;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3 3l4 4M7 3L3 7" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
                   </span>
                   <span style="font-family:'Flame',sans-serif;font-weight:700;font-size:15px;color:#D62300;">Не влияет</span>
                 </div>
-                <ul style="margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.8;color:#502314;">
+                <ul style="margin:0;padding-left:0;list-style:none;font-size:14px;line-height:1.7;color:#502314;">
                   <li>❌ Выбор блюд в меню</li>
                   <li>❌ Удобство мобильного приложения</li>
                 </ul>
               </div>
             </div>
-            <p style="font-size:13px;color:#198737;font-weight:700;margin:16px 0 0;text-align:center;font-family:'Roboto',sans-serif;">
+            <p style="font-size:13px;color:#198737;font-weight:700;margin:14px 0 0;text-align:center;font-family:'Roboto',sans-serif;line-height:1.5;">
               Индекс оценивает только то, что ты реально можешь улучшить. Остальное системой отсеивается — чтобы оценка была честной.
             </p>
           </div>
@@ -1367,7 +1463,7 @@
     </div>
 
     <div class="next-row fade-in">
-      <button class="btn-finish" onclick="navigateTo('home')">
+      <button class="btn-finish" onclick="SCORM.complete()">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Завершить курс
       </button>
@@ -1402,6 +1498,9 @@ const hub1Done      = [false, false, false, false];
 let currentPage     = 'home';
 
 function navigateTo(pageId) {
+  // Останавливаем видео/аудио на текущей странице перед уходом с неё
+  stopActivePageMedia();
+
   PAGES.forEach(id => {
     const el = document.getElementById('page-' + id);
     if (el) el.classList.remove('active');
@@ -1451,17 +1550,12 @@ function goToSection1(n) {
 }
 
 function completeSection1(n) {
+  // Разделы открыты сразу, блокировок нет — просто отмечаем пройденный
+  // раздел зелёной галочкой и возвращаемся к списку отчётов.
   hub1Done[n - 1] = true;
   const cards = document.querySelectorAll('#hub1-grid .hub-card');
   if (cards[n - 1]) cards[n - 1].classList.add('done');
-  if (n < 4 && cards[n]) cards[n].classList.remove('locked');
   navigateTo('hub1');
-  setTimeout(() => {
-    if (hub1Done.every(Boolean)) {
-      const row = document.getElementById('hub1-next-row');
-      if (row) row.classList.add('show');
-    }
-  }, 120);
 }
 
 /* ─────────────────────────────────────
@@ -1509,10 +1603,70 @@ function toggleFaq(btn) {
 }
 
 /* ─────────────────────────────────────
+   Остановка медиа при уходе со страницы
+
+   Это SPA: «страницы» — это div'ы, реальной навигации нет, поэтому
+   обычный beforeunload не срабатывает и встроенное видео продолжает
+   играть в фоне. Перед сменой страницы:
+     • <video>/<audio> — ставим на паузу;
+     • <iframe> (PeerTube/bktube-эмбед) — переназначаем src на самого
+       себя. Перезагрузка фрейма гарантированно обрывает воспроизведение
+       без знания внутреннего postMessage-API конкретного плеера.
+   Трогаем только активную (покидаемую) страницу, чтобы не дёргать
+   остальные эмбеды лишний раз.
+───────────────────────────────────── */
+function stopActivePageMedia() {
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  active.querySelectorAll('video, audio').forEach(m => { try { m.pause(); } catch (e) {} });
+  active.querySelectorAll('iframe').forEach(f => {
+    const src = f.getAttribute('src');
+    if (src) f.setAttribute('src', src); // reload → stop
+  });
+}
+
+/* ─────────────────────────────────────
+   Лайтбокс для скриншотов
+   Клик по скрину открывает его на весь экран в натуральном размере
+   (со скроллом) — особенно полезно на мобиле, где документы мелкие.
+───────────────────────────────────── */
+function openLightbox(src, alt) {
+  const lb  = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  img.src = src;
+  img.alt = alt || '';
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+  document.body.style.overflow = '';
+}
+
+/* ─────────────────────────────────────
    Init
 ───────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => navigateTo('home'));
+document.addEventListener('DOMContentLoaded', () => {
+  navigateTo('home');
+
+  // Делегируем клики по скринам → лайтбокс
+  document.addEventListener('click', e => {
+    const img = e.target.closest('.screenshot-img, .report-pair-frame img');
+    if (img) openLightbox(img.getAttribute('src'), img.getAttribute('alt'));
+  });
+  // Закрытие по Esc
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+});
 </script>
+
+<!-- Лайтбокс для увеличения скринов -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Закрыть">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
 
 </body>
 </html>
