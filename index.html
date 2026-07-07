@@ -283,6 +283,54 @@
       cursor: zoom-in;
     }
 
+    /* ── eyeflow: список видео-скринкастов ── */
+    .eyeflow-list {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .eyeflow-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .eyeflow-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FF8732;
+      color: #fff;
+      font-family: 'Flame', sans-serif;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .eyeflow-head h4 {
+      font-size: 16px;
+      margin: 0;
+      color: #502314;
+      line-height: 1.25;
+    }
+    /* Адаптивная обёртка 16:9 для встроенного видео */
+    .video-embed-wrap {
+      position: relative;
+      padding-top: 56.25%;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #111;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .video-embed-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
     /* ── Lightbox для скринов ── */
     .lightbox {
       display: none;
@@ -1160,6 +1208,70 @@
         <div class="report-row-wrap fade-in">
           <p class="report-section-label">Комплементы и замены ДОБРО</p>
           <img src="images/image16.png" alt="Комплементы и замены ДОБРО" class="report-row-img" />
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-divider fade-in"></div>
+
+    <!-- ── Как работать в системе eyeflow ── -->
+    <div class="fade-in">
+      <h3 style="font-size:20px;margin:0 0 8px;">Как работать в системе eyeflow</h3>
+      <p style="font-size:14px;color:#502314;opacity:0.5;margin:0 0 24px;font-family:'Roboto',sans-serif;">
+        Пять коротких скринкастов — знакомство с программой и разбор каждой вкладки.
+      </p>
+
+      <div class="eyeflow-list">
+
+        <div class="eyeflow-item">
+          <div class="eyeflow-head">
+            <span class="eyeflow-num">1</span>
+            <h4>Знакомство с программой eyeflow для оценки ГО</h4>
+          </div>
+          <div class="video-embed-wrap">
+            <iframe title="Знакомство с программой eyeflow для оценки ГО" width="100%" height="100%" src="https://bktube.burgerkingrus.ru/videos/embed/nBGi7aVzuBeuprZDAChyPk?title=0&amp;warningTitle=0&amp;peertubeLink=0&amp;p2p=0" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+          </div>
+        </div>
+
+        <div class="eyeflow-item">
+          <div class="eyeflow-head">
+            <span class="eyeflow-num">2</span>
+            <h4>Вкладка «Резюме»</h4>
+          </div>
+          <div class="video-embed-wrap">
+            <iframe title="Работа во вкладке «Резюме» в системе eyeflow" width="100%" height="100%" src="https://bktube.burgerkingrus.ru/videos/embed/aXv8kVwzwjuL7THXxzgGfj?title=0&amp;warningTitle=0&amp;peertubeLink=0&amp;p2p=0" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+          </div>
+        </div>
+
+        <div class="eyeflow-item">
+          <div class="eyeflow-head">
+            <span class="eyeflow-num">3</span>
+            <h4>Вкладка «Прокачка»</h4>
+          </div>
+          <div class="video-embed-wrap">
+            <iframe title="Работа во вкладке «Прокачка»" width="100%" height="100%" src="https://bktube.burgerkingrus.ru/videos/embed/9x9fX1QmTL9f4c2Ygsrdxm?title=0&amp;warningTitle=0&amp;peertubeLink=0&amp;p2p=0" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+          </div>
+        </div>
+
+        <div class="eyeflow-item">
+          <div class="eyeflow-head">
+            <span class="eyeflow-num">4</span>
+            <h4>Вкладка «Рутина»</h4>
+          </div>
+          <div class="video-embed-wrap">
+            <iframe title="Работа во вкладке «Рутина»" width="100%" height="100%" src="https://bktube.burgerkingrus.ru/videos/embed/akoFftpA8HH6UzYPYzYkhe?title=0&amp;warningTitle=0&amp;peertubeLink=0&amp;p2p=0" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+          </div>
+        </div>
+
+        <div class="eyeflow-item">
+          <div class="eyeflow-head">
+            <span class="eyeflow-num">5</span>
+            <h4>Вкладка «Расправить крылья»</h4>
+          </div>
+          <div class="video-embed-wrap">
+            <iframe title="Работа во вкладке «Расправить крылья»" width="100%" height="100%" src="https://bktube.burgerkingrus.ru/videos/embed/smEtyuhdXdahtBwbaBQzQq?title=0&amp;warningTitle=0&amp;peertubeLink=0&amp;p2p=0" frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+          </div>
         </div>
 
       </div>
