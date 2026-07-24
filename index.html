@@ -1680,7 +1680,7 @@
     <div class="fade-in" id="final-quiz">
       <h3 style="font-size:20px;margin:0 0 8px;">Итоговый тест</h3>
       <p style="font-size:15px;color:#502314;opacity:0.75;margin:0 0 4px;font-family:'Roboto',sans-serif;">
-        Проходной балл — <strong>80%</strong>. Пересдавать можно сколько угодно раз.
+        Проходной балл — <strong>80%</strong>.
       </p>
       <p style="font-size:13px;color:#502314;opacity:0.5;margin:0 0 24px;font-family:'Roboto',sans-serif;">
         Ответь на все вопросы и нажми «Проверить». Завершение курса откроется после сдачи на 80% и выше.
@@ -2005,12 +2005,23 @@ function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+/* Перемешиваем массив (Fisher–Yates), не мутируя исходный */
+function shuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function renderQuiz() {
   const wrap = document.getElementById('quiz-questions');
   if (!wrap) return;
   wrap.innerHTML = QUIZ_DATA.map((q, qi) => {
     const hint = q.type === 'multi' ? 'Выбери все верные варианты' : 'Выбери один вариант';
-    const opts = q.options.map(o =>
+    // варианты перемешиваем, чтобы верные не стояли всегда первыми
+    const opts = shuffled(q.options).map(o =>
       `<button type="button" class="quiz-opt" data-correct="${o.correct ? 1 : 0}" onclick="toggleOpt(this)">
          <span class="quiz-check">${CHECK_SVG}</span>
          <span>${escapeHtml(o.t)}</span>
@@ -2080,13 +2091,15 @@ function checkQuiz() {
   const pct = Math.round((total / qs.length) * 100);
   quiz.classList.add('locked');
   document.getElementById('quiz-submit').style.display = 'none';
-  document.getElementById('quiz-retry').style.display = 'inline-flex';
 
   if (pct >= 80) {
+    // Тест пройден — пересдавать незачем, кнопку «Пройти заново» прячем
+    document.getElementById('quiz-retry').style.display = 'none';
     res.className = 'quiz-result show pass';
     res.innerHTML = '<strong>Тест пройден!</strong> Твой результат: ' + pct + '%. Завершение курса открыто ниже.';
     revealCourseFinal();
   } else {
+    document.getElementById('quiz-retry').style.display = 'inline-flex';
     res.className = 'quiz-result show fail';
     res.innerHTML = '<strong>Результат: ' + pct + '%.</strong> Нужно набрать не меньше 80%. Исправь вопросы с ошибками и пройди тест заново.';
   }
@@ -2096,11 +2109,7 @@ function checkQuiz() {
 function resetQuiz() {
   const quiz = document.getElementById('final-quiz');
   quiz.classList.remove('locked');
-  quiz.querySelectorAll('.quiz-opt.selected').forEach(o => o.classList.remove('selected'));
-  quiz.querySelectorAll('.quiz-question').forEach(q => {
-    q.classList.remove('wrong');
-    q.querySelector('.quiz-flag').innerHTML = '';
-  });
+  renderQuiz(); // перерисовываем — варианты перемешиваются заново
   document.getElementById('quiz-result').className = 'quiz-result';
   document.getElementById('quiz-retry').style.display = 'none';
   document.getElementById('quiz-submit').style.display = 'inline-flex';
