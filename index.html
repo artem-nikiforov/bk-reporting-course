@@ -331,6 +331,124 @@
       border: 0;
     }
 
+    /* ── Итоговый тест ── */
+    #quiz-questions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .quiz-question {
+      border: 2px solid #F5EBDC;
+      border-radius: 16px;
+      padding: 20px 22px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .quiz-question.wrong { border-color: #D62300; background: #FEF0EF; }
+    .quiz-qhead {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .quiz-qnum {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #FF8732;
+      color: #fff;
+      font-family: 'Flame', sans-serif;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .quiz-qtext {
+      font-weight: 700;
+      font-size: 16px;
+      color: #502314;
+      line-height: 1.4;
+      padding-top: 3px;
+    }
+    .quiz-hint {
+      font-size: 12px;
+      color: #502314;
+      opacity: 0.45;
+      margin: 0 0 14px 40px;
+      font-family: 'Roboto', sans-serif;
+    }
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .quiz-opt {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      width: 100%;
+      background: #fff;
+      border: 2px solid #F5EBDC;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      color: #502314;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.4;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .quiz-opt:hover { border-color: #FF8732; }
+    .quiz-opt.selected { border-color: #FF8732; background: #FFF8F0; }
+    .quiz-check {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .quiz-question[data-type="single"] .quiz-check { border-radius: 50%; }
+    .quiz-question[data-type="multi"]  .quiz-check { border-radius: 6px; }
+    .quiz-check svg { opacity: 0; transition: opacity 0.15s; }
+    .quiz-opt.selected .quiz-check { border-color: #FF8732; background: #FF8732; }
+    .quiz-opt.selected .quiz-check svg { opacity: 1; }
+    /* После проверки клики по вариантам блокируются */
+    #final-quiz.locked .quiz-opt { pointer-events: none; }
+    .quiz-flag:not(:empty) { margin-top: 12px; }
+    .flag-bad {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #D62300;
+      font-family: 'Roboto', sans-serif;
+    }
+    .quiz-result {
+      display: none;
+      border-radius: 14px;
+      padding: 18px 22px;
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 22px 0 0;
+    }
+    .quiz-result.show { display: block; }
+    .quiz-result.pass { background: #E8F5EB; border: 2px solid #198737; color: #126128; }
+    .quiz-result.fail { background: #FEF0EF; border: 2px solid #D62300; color: #9E1B00; }
+    .quiz-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    /* Заключение скрыто, пока тест не сдан */
+    #course-final { display: none; }
+    #course-final.show { display: block; }
+
     /* ── Lightbox для скринов ── */
     .lightbox {
       display: none;
@@ -1558,25 +1676,51 @@
 
     <div class="section-divider fade-in"></div>
 
-    <!-- ── Заключение ── -->
-    <div class="fade-in conclusion-card">
-      <h2>Главное — действовать</h2>
-      <p>
-        Смотри на отчёты по заменам, комплементам и Индекс Гостемании как на подсказки. Они прямо говорят, где ресторан в порядке, а где пора что‑то менять.
+    <!-- ── Итоговый тест ── -->
+    <div class="fade-in" id="final-quiz">
+      <h3 style="font-size:20px;margin:0 0 8px;">Итоговый тест</h3>
+      <p style="font-size:15px;color:#502314;opacity:0.75;margin:0 0 4px;font-family:'Roboto',sans-serif;">
+        Проходной балл — <strong>80%</strong>. Пересдавать можно сколько угодно раз.
       </p>
-      <p>
-        Реагируй на сигналы, обсуждай с командой, планируй действия — и гостевой опыт будет расти.
+      <p style="font-size:13px;color:#502314;opacity:0.5;margin:0 0 24px;font-family:'Roboto',sans-serif;">
+        Ответь на все вопросы и нажми «Проверить». Завершение курса откроется после сдачи на 80% и выше.
       </p>
-      <p style="color:#FFAA00;font-weight:700;font-family:'Flame',sans-serif;font-size:17px;margin-top:8px;">
-        Доверяй своим решениям и помни: каждый инцидент, правильно решённый на месте, укрепляет бренд.
-      </p>
+
+      <div id="quiz-questions"></div>
+
+      <div id="quiz-result" class="quiz-result"></div>
+
+      <div class="quiz-actions">
+        <button class="btn-check" id="quiz-submit" onclick="checkQuiz()">Проверить</button>
+        <button class="btn-secondary" id="quiz-retry" onclick="resetQuiz()" style="display:none;">Пройти заново</button>
+      </div>
     </div>
 
-    <div class="next-row fade-in">
-      <button class="btn-finish" onclick="SCORM.complete()">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Завершить курс
-      </button>
+    <!-- ── Заключение + Завершить (открывается после сдачи теста) ── -->
+    <div id="course-final">
+
+      <div class="section-divider fade-in"></div>
+
+      <div class="fade-in conclusion-card">
+        <h2>Главное — действовать</h2>
+        <p>
+          Смотри на отчёты по заменам, комплементам и Индекс Гостемании как на подсказки. Они прямо говорят, где ресторан в порядке, а где пора что‑то менять.
+        </p>
+        <p>
+          Реагируй на сигналы, обсуждай с командой, планируй действия — и гостевой опыт будет расти.
+        </p>
+        <p style="color:#FFAA00;font-weight:700;font-family:'Flame',sans-serif;font-size:17px;margin-top:8px;">
+          Доверяй своим решениям и помни: каждый инцидент, правильно решённый на месте, укрепляет бренд.
+        </p>
+      </div>
+
+      <div class="next-row fade-in">
+        <button class="btn-finish" onclick="SCORM.complete()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Завершить курс
+        </button>
+      </div>
+
     </div>
 
   </div>
@@ -1755,9 +1899,226 @@ function closeLightbox() {
 }
 
 /* ─────────────────────────────────────
+   Итоговый тест
+
+   • Одиночные вопросы («Выбери верный вариант») — 1/0.
+   • Множественные («Выбери все верные») — частичные баллы:
+     +1 за верный вариант, −1 за лишний, делим на число верных,
+     обрезаем в диапазон [0..1].
+   • Итог = среднее по всем вопросам × 100. Проходной ≥ 80%.
+   • После проверки подсвечиваются только вопросы с ошибкой,
+     правильные ответы не раскрываются.
+   • Пересдача не ограничена. Заключение и кнопка «Завершить курс»
+     открываются только после сдачи на 80%+.
+───────────────────────────────────── */
+const QUIZ_DATA = [
+  {
+    q: 'Что показывает Индекс Гостемании?',
+    type: 'single',
+    options: [
+      { t: 'Удовлетворённость Гостей посещением ресторана', correct: true },
+      { t: 'Количество повторных визитов Гостей' },
+      { t: 'Выполнение плана продаж в ресторане' },
+      { t: 'Количество списаний по причине «ДОБРО: замена по жалобе Гостя»' },
+    ],
+  },
+  {
+    q: 'Какие атрибуты влияют на Индекс Гостемании?',
+    type: 'multi',
+    options: [
+      { t: 'Чистота в зале', correct: true },
+      { t: 'Скорость обслуживания', correct: true },
+      { t: 'Точность сборки заказа', correct: true },
+      { t: 'Удобство мобильного приложения' },
+      { t: 'Ассортимент меню' },
+    ],
+  },
+  {
+    q: 'Что необходимо сделать после определения приоритетных атрибутов Индекса Гостемании?',
+    type: 'single',
+    options: [
+      { t: 'Составить план действий (Action Plan)', correct: true },
+      { t: 'Оценить результаты' },
+      { t: 'Проанализировать отзывы Гостей' },
+      { t: 'Проанализировать количество выданных комплементов' },
+    ],
+  },
+  {
+    q: 'Почему анализировать отчёты по Гостемании нужно регулярно, а не только при снижении Индекса Гостемании?',
+    type: 'multi',
+    options: [
+      { t: 'Чтобы предотвращать ухудшение показателей', correct: true },
+      { t: 'Чтобы своевременно замечать негативные тенденции', correct: true },
+      { t: 'Для своевременного обучения сотрудников', correct: true },
+      { t: 'Для уменьшения количества выдаваемых комплементов' },
+      { t: 'Чтобы контролировать количество списаний по причине замен' },
+    ],
+  },
+  {
+    q: 'Почему рекомендуется ежедневно работать со вкладкой «Резюме» в системе eyeflow?',
+    type: 'multi',
+    options: [
+      { t: 'Чтобы своевременно увидеть отзывы Гостей', correct: true },
+      { t: 'Для отслеживания динамики Индекса Гостемании', correct: true },
+      { t: 'Чтобы оперативно скорректировать работу команды', correct: true },
+      { t: 'Чтобы формировать новый план действий на каждую смену' },
+      { t: 'Для проверки соблюдения Плана Действий' },
+    ],
+  },
+  {
+    q: 'При анализе Индекса Гостемании ты видишь, что большинство негативных отзывов связано с точностью сборки заказов. Что ты проверишь в первую очередь?',
+    type: 'multi',
+    options: [
+      { t: 'Отсутствие стоп-позиций', correct: true },
+      { t: 'Обученность сотрудников', correct: true },
+      { t: 'Графики сотрудников', correct: true },
+      { t: 'Достаточно ли сотрудников в зале' },
+      { t: 'Исправность оборудования' },
+    ],
+  },
+  {
+    q: 'В ресторане увеличилось количество жалоб на температуру блюд. Что необходимо проверить?',
+    type: 'multi',
+    options: [
+      { t: 'Время от приготовления до выдачи', correct: true },
+      { t: 'Исправность теплового оборудования', correct: true },
+      { t: 'Хватает ли сотрудников ресторана и курьеров', correct: true },
+      { t: 'Обученность сотрудников сборке заказов' },
+      { t: 'Нарушения при приёме поставок' },
+    ],
+  },
+  {
+    q: 'Ресторан получил несколько негативных отзывов по общению сотрудников. Какое действие будет наиболее правильным?',
+    type: 'single',
+    options: [
+      { t: 'Разобрать отзывы с командой, провести ролевые игры и определить действия на смену', correct: true },
+      { t: 'Изменить целевой показатель Индекса Гостемании и скорректировать План действий' },
+      { t: 'Обсудить отзывы с Территориальным управляющим для составления Плана действий' },
+      { t: 'Проверить наличие памяток по ДОБРО в ресторане' },
+    ],
+  },
+];
+
+const CHECK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.2l2.6 2.6L10 3.2" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderQuiz() {
+  const wrap = document.getElementById('quiz-questions');
+  if (!wrap) return;
+  wrap.innerHTML = QUIZ_DATA.map((q, qi) => {
+    const hint = q.type === 'multi' ? 'Выбери все верные варианты' : 'Выбери один вариант';
+    const opts = q.options.map(o =>
+      `<button type="button" class="quiz-opt" data-correct="${o.correct ? 1 : 0}" onclick="toggleOpt(this)">
+         <span class="quiz-check">${CHECK_SVG}</span>
+         <span>${escapeHtml(o.t)}</span>
+       </button>`).join('');
+    return `<div class="quiz-question" data-type="${q.type}">
+              <div class="quiz-qhead">
+                <span class="quiz-qnum">${qi + 1}</span>
+                <span class="quiz-qtext">${escapeHtml(q.q)}</span>
+              </div>
+              <p class="quiz-hint">${hint}</p>
+              <div class="quiz-opts">${opts}</div>
+              <div class="quiz-flag"></div>
+            </div>`;
+  }).join('');
+}
+
+function toggleOpt(btn) {
+  const quiz = document.getElementById('final-quiz');
+  if (quiz.classList.contains('locked')) return;
+  const q = btn.closest('.quiz-question');
+  if (q.dataset.type === 'single') {
+    q.querySelectorAll('.quiz-opt').forEach(o => { if (o !== btn) o.classList.remove('selected'); });
+    btn.classList.toggle('selected');
+  } else {
+    btn.classList.toggle('selected');
+  }
+}
+
+function checkQuiz() {
+  const quiz = document.getElementById('final-quiz');
+  const qs = [...quiz.querySelectorAll('.quiz-question')];
+  const res = document.getElementById('quiz-result');
+
+  // Требуем ответ на все вопросы
+  const firstUnanswered = qs.find(q => q.querySelectorAll('.quiz-opt.selected').length === 0);
+  if (firstUnanswered) {
+    res.className = 'quiz-result show fail';
+    res.innerHTML = 'Ответь на все вопросы — остались пропущенные.';
+    firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  let total = 0;
+  qs.forEach(q => {
+    const opts = [...q.querySelectorAll('.quiz-opt')];
+    const chosen = opts.filter(o => o.classList.contains('selected'));
+    const totalCorrect = opts.filter(o => o.dataset.correct === '1').length;
+    let sc = 0;
+    if (q.dataset.type === 'single') {
+      sc = (chosen.length === 1 && chosen[0].dataset.correct === '1') ? 1 : 0;
+    } else {
+      let raw = 0;
+      chosen.forEach(o => { raw += o.dataset.correct === '1' ? 1 : -1; });
+      sc = Math.min(1, Math.max(0, raw) / totalCorrect);
+    }
+    const flag = q.querySelector('.quiz-flag');
+    q.classList.remove('wrong');
+    if (sc >= 1) {
+      flag.innerHTML = '';
+    } else {
+      q.classList.add('wrong');
+      flag.innerHTML = '<span class="flag-bad">⚠ Здесь есть ошибка — проверь ещё раз</span>';
+    }
+    total += sc;
+  });
+
+  const pct = Math.round((total / qs.length) * 100);
+  quiz.classList.add('locked');
+  document.getElementById('quiz-submit').style.display = 'none';
+  document.getElementById('quiz-retry').style.display = 'inline-flex';
+
+  if (pct >= 80) {
+    res.className = 'quiz-result show pass';
+    res.innerHTML = '<strong>Тест пройден!</strong> Твой результат: ' + pct + '%. Завершение курса открыто ниже.';
+    revealCourseFinal();
+  } else {
+    res.className = 'quiz-result show fail';
+    res.innerHTML = '<strong>Результат: ' + pct + '%.</strong> Нужно набрать не меньше 80%. Исправь вопросы с ошибками и пройди тест заново.';
+  }
+  res.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  const quiz = document.getElementById('final-quiz');
+  quiz.classList.remove('locked');
+  quiz.querySelectorAll('.quiz-opt.selected').forEach(o => o.classList.remove('selected'));
+  quiz.querySelectorAll('.quiz-question').forEach(q => {
+    q.classList.remove('wrong');
+    q.querySelector('.quiz-flag').innerHTML = '';
+  });
+  document.getElementById('quiz-result').className = 'quiz-result';
+  document.getElementById('quiz-retry').style.display = 'none';
+  document.getElementById('quiz-submit').style.display = 'inline-flex';
+  quiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function revealCourseFinal() {
+  const f = document.getElementById('course-final');
+  if (!f || f.classList.contains('show')) return;
+  f.classList.add('show');
+  f.querySelectorAll('.fade-in').forEach(e => e.classList.add('visible'));
+}
+
+/* ─────────────────────────────────────
    Init
 ───────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  renderQuiz();
   navigateTo('home');
 
   // Делегируем клики по скринам → лайтбокс
