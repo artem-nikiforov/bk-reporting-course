@@ -2053,6 +2053,7 @@ function checkQuiz() {
   }
 
   let total = 0;
+  const answers = []; // для лога: что выбрали и верно ли — по каждому вопросу
   qs.forEach(q => {
     const opts = [...q.querySelectorAll('.quiz-opt')];
     const chosen = opts.filter(o => o.classList.contains('selected'));
@@ -2074,6 +2075,12 @@ function checkQuiz() {
       flag.innerHTML = '<span class="flag-bad">⚠ Здесь есть ошибка — проверь ещё раз</span>';
     }
     total += sc;
+    // Пишем текст варианта, а не индекс: варианты перемешиваются при каждой
+    // попытке, поэтому индекс сам по себе ничего не скажет.
+    answers.push({
+      answer:  chosen.map(o => o.lastElementChild.textContent.trim()).join('; '),
+      correct: sc >= 1,
+    });
   });
 
   const pct = Math.round((total / qs.length) * 100);
@@ -2092,6 +2099,17 @@ function checkQuiz() {
     res.innerHTML = '<strong>Результат: ' + pct + '%.</strong> Нужно набрать не меньше 80%. Исправь вопросы с ошибками и пройди тест заново.';
   }
   res.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // Логирование попытки — САМОЙ ПОСЛЕДНЕЙ строкой, когда весь UI уже
+  // обновлён и результат засчитан. Функция ничего не ждёт и не бросает:
+  // при любой сетевой проблеме тест уже пройден.
+  logQuizAttempt({
+    score:   Math.round(total * 100) / 100,
+    total:   qs.length,
+    percent: pct,
+    passed:  pct >= 80,
+    answers: answers,
+  });
 }
 
 function resetQuiz() {
@@ -2109,6 +2127,90 @@ function revealCourseFinal() {
   if (!f || f.classList.contains('show')) return;
   f.classList.add('show');
   f.querySelectorAll('.fade-in').forEach(e => e.classList.add('visible'));
+}
+
+/* ═════════════════════════════════════════════════
+   Логирование попыток теста в Google Таблицу
+
+   Принцип — fire-and-forget: прохождение курса не зависит от сети.
+   Нет интернета, домен режет корпоративный прокси, Apps Script упал
+   или молчит — тест всё равно засчитывается мгновенно.
+
+   Как это обеспечено:
+   • fetch без await — вызывающий код идёт дальше синхронно;
+   • mode:'no-cors' + text/plain — нет CORS-preflight (OPTIONS),
+     который на части прокси может зависать;
+   • .catch(() => {}) — сетевая ошибка гасится молча;
+   • внешний try/catch — ошибка сборки payload никуда не всплывает;
+   • пустой QUIZ_LOG_URL = выключено, fetch вообще не вызывается.
+═════════════════════════════════════════════════ */
+
+/* Пустая строка = логирование ВЫКЛЮЧЕНО (безопасное состояние по умолчанию).
+   Сюда вставить URL веб-приложения Apps Script, оканчивающийся на /exec */
+const QUIZ_LOG_URL    = '';
+/* Должен совпадать с SECRET в Apps Script */
+const QUIZ_LOG_SECRET = 'bk-gostemania-2026';
+
+/* ID захода: генерируется один раз, живёт в sessionStorage (переживает refresh) */
+function quizLogSessionId() {
+  try {
+    let id = sessionStorage.getItem('bkq_session');
+    if (!id) {
+      id = 'S-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+      sessionStorage.setItem('bkq_session', id);
+    }
+    return id;
+  } catch (e) { return ''; } // sessionStorage может быть недоступен (приватный режим, песочница iframe)
+}
+
+/* Номер попытки в рамках вкладки */
+function quizLogNextAttempt() {
+  try {
+    const n = (parseInt(sessionStorage.getItem('bkq_attempt'), 10) || 0) + 1;
+    sessionStorage.setItem('bkq_attempt', String(n));
+    return n;
+  } catch (e) { return 0; }
+}
+
+/* Данные слушателя из SCORM, если курс запакован в SCORM. Нет SCORM — пустая строка */
+function quizLogScormField(key) {
+  try {
+    if (window.SCORM && typeof window.SCORM.get === 'function') {
+      return String(window.SCORM.get(key) || '');
+    }
+  } catch (e) {}
+  return '';
+}
+
+function logQuizAttempt(details) {
+  try {
+    if (!QUIZ_LOG_URL) return; // выключено — не делаем ничего
+
+    const payload = {
+      secret:       QUIZ_LOG_SECRET,
+      timestamp:    new Date().toISOString(),
+      session_id:   quizLogSessionId(),
+      attempt:      quizLogNextAttempt(),
+      student_id:   quizLogScormField('cmi.core.student_id'),
+      student_name: quizLogScormField('cmi.core.student_name'),
+      score:        details.score,
+      total:        details.total,
+      percent:      details.percent,
+      passed:       details.passed ? 'да' : 'нет',
+    };
+    details.answers.forEach((a, i) => {
+      payload['q' + (i + 1) + '_answer']  = a.answer;
+      payload['q' + (i + 1) + '_correct'] = a.correct ? 'да' : 'нет';
+    });
+
+    // Без await и без return — вызывающий код продолжает синхронно.
+    fetch(QUIZ_LOG_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body:    JSON.stringify(payload),
+    }).catch(() => {});
+  } catch (e) { /* молчим: логирование не может помешать прохождению */ }
 }
 
 /* ─────────────────────────────────────
